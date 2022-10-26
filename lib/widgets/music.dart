@@ -1,15 +1,17 @@
 import 'dart:developer';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/favorites.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
+import 'package:music_player/functions/playlist_rename.dart';
 import 'package:music_player/functions/playlists.dart';
 
-import 'package:music_player/screeens/home.dart';
-import 'package:music_player/screeens/miniplayerbottomsheet.dart';
-import 'package:music_player/screeens/screenfavorites.dart';
-import 'package:music_player/screeens/screenliabrary.dart';
+import 'package:music_player/screeens/screen_home.dart';
+import 'package:music_player/screeens/screen_miniplayer.dart';
+import 'package:music_player/screeens/screen_favorites.dart';
+import 'package:music_player/screeens/screen%20_liabrary.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 import 'package:on_audio_query/on_audio_query.dart';
@@ -22,10 +24,10 @@ class Musics extends StatefulWidget {
     this.conditionalicon,
     required this.iconwant,
     required this.isithomepage,
-    // required this.audioPlayer,
     required this.playlistname,
+    required this.audioPlayer,
   }) : super(key: key);
-
+  final AssetsAudioPlayer audioPlayer;
   final int index;
   final List<DBSongs> item;
   final bool? conditionalicon;
@@ -38,12 +40,12 @@ class Musics extends StatefulWidget {
 }
 
 class _MusicsState extends State<Musics> {
-  Playsong(String uri) {
-    audioPlayer.setAudioSource(AudioSource.uri(Uri.parse(uri)));
-    audioPlayer.play();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
   }
 
-  @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -53,18 +55,12 @@ class _MusicsState extends State<Musics> {
             builder: (BuildContext context, int value, Widget? child) {
               return ListTile(
                 onTap: () {
-                  Playsong(widget.item[widget.index].uri);
-                  log('koi');
-                  // miniplayer_showmodelsheet(context: context);
-
-                  setState(() {
-                    onPressedIndex.value = widget.index;
-                    onPressedIndex.notifyListeners();
-
-                    //   log(onPressedIndex.value.toString());
-                  });
+                  newminiplayer(
+                      audioPlayer: widget.audioPlayer,
+                      context: context,
+                      index: widget.index,
+                      item: widget.item);
                 },
-                // onTap: Playsong(item[index].uri!),
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
                 title: Text(
@@ -88,16 +84,17 @@ class _MusicsState extends State<Musics> {
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                        height: screenHeight * 0.04,
-                        width: screenWidth * 0.09,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(5),
-                            color: darkblack),
-                        child: Icon(
-                          Icons.play_arrow,
-                          color: purewhite,
-                        )),
+                    // Container(
+                    //     height: screenHeight * 0.04,
+                    //     width: screenWidth * 0.09,
+                    //     decoration: BoxDecoration(
+                    //         borderRadius: BorderRadius.circular(5),
+                    //         color: darkblack),
+                    //     child:
+                    //     Icon(
+                    //       Icons.play_arrow,
+                    //       color: purewhite,
+                    //     )),
                     widget.iconwant == true
                         ? widget.conditionalicon == true
                             ? PopupMenuButton(
@@ -209,11 +206,17 @@ class _MusicsState extends State<Musics> {
                 EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
             title: Text(
               widget.item[widget.index].title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: purewhite, fontSize: 16, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              widget.item[widget.index].artist,
+              widget.item[widget.index].artist == '<unknown>'
+                  ? 'unknown'
+                  : widget.item[widget.index].artist,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: grey, fontSize: 12, fontWeight: FontWeight.w400),
             ),
@@ -226,10 +229,49 @@ class _MusicsState extends State<Musics> {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5),
                         color: darkblack),
-                    child: Icon(
-                      Icons.play_arrow,
-                      color: purewhite,
+                    child: GestureDetector(
+                      onTap: () {
+                        newminiplayer(
+                            context: context,
+                            item: widget.item,
+                            index: widget.index,
+                            audioPlayer: widget.audioPlayer);
+                      },
+                      child: Icon(
+                        Icons.play_arrow,
+                        color: purewhite,
+                      ),
                     )),
+                // Container(
+                //     height: screenHeight * 0.04,
+                //     width: screenWidth * 0.09,
+                //     decoration: BoxDecoration(
+                //         borderRadius: BorderRadius.circular(5),
+                //         color: darkblack),
+                //     child:
+                //         //  PlayerBuilder.isPlaying(
+                //         //     player: widget.audioPlayer,
+                //         //     builder: (context, isplaying) {
+                //         //       return
+                //         IconButton(
+                //             onPressed: () {
+                //               newminiplayer(
+                //                   context: context,
+                //                   item: widget.item,
+                //                   index: widget.index,
+                //                   audioPlayer: widget.audioPlayer);
+                //               // setState(() {
+                //               //   assetAudioplayineTools.playbutton(
+                //               //       audioPlayer: widget.audioPlayer);
+                //               // });
+                //             },
+                //             icon: Icon(
+                //               // isplaying ? Icons.pause :
+                //               Icons.play_arrow,
+                //               color: purewhite,
+                //             ))
+                //     // })
+                //     ),
                 widget.iconwant == true
                     ? widget.conditionalicon == true
                         ? ValueListenableBuilder(
@@ -281,6 +323,8 @@ class _MusicsState extends State<Musics> {
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             ScreenLibrary(
+                                                              audioPlayer: widget
+                                                                  .audioPlayer,
                                                               item: widget.item,
                                                             ))),
                                                 icon: Icon(
@@ -331,4 +375,22 @@ class _MusicsState extends State<Musics> {
             ),
           );
   }
+}
+
+newminiplayer(
+    {required BuildContext context,
+    required List<DBSongs> item,
+    required int index,
+    required AssetsAudioPlayer audioPlayer}) {
+  return showBottomSheet(
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15.0)),
+    context: context,
+    builder: (context) {
+      return MiniPlayer(
+        audioPlayer: audioPlayer,
+        songList: item,
+        index: index,
+      );
+    },
+  );
 }

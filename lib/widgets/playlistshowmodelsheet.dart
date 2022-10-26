@@ -1,11 +1,10 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/functions/playlists.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/new_create_playlist_show_dailouge.dart';
+import 'package:on_audio_query/on_audio_query.dart';
 
 import '../db/db_functions/db_models/data_model.dart';
 
@@ -22,21 +21,61 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
         child: Column(
           children: [
             Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Container(
-                width: screenwidth * 0.35,
-                height: screenHeight * 0.05,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15), color: grey),
-                child: Center(
-                  child: Text(
-                    'Add Playlist',
-                    style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w500,
-                        color: skyblack),
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  Container(
+                    height: screenHeight * 0.09,
+                    width: screenwidth * 0.2,
+                    child: QueryArtworkWidget(
+                        artworkWidth: 400,
+                        artworkHeight: 400,
+                        artworkBorder: BorderRadius.circular(90),
+                        id: int.parse(Song.id),
+                        type: ArtworkType.AUDIO,
+                        nullArtworkWidget: Container(
+                          height: screenHeight * 0.09,
+                          width: screenwidth * 0.2,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: grey),
+                              borderRadius: BorderRadius.circular(90)),
+                          child: Icon(
+                            Icons.music_note,
+                            size: 25,
+                            color: grey,
+                          ),
+                        )),
                   ),
-                ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    width: screenwidth * 0.8,
+                    child: Center(
+                      child: Text(
+                        Song.title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 13, fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    width: screenwidth * 0.45,
+                    child: Center(
+                      child: Text(
+                        Song.artist == '<unknown>' ? 'unknown' : Song.artist,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontSize: 11,
+                            color: skyblack,
+                            fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
             IconButton(
@@ -164,6 +203,7 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                             title: Text(playlistKey),
                             subtitle: Text(
                               '${songlist.length} song',
+                              style: TextStyle(fontSize: 11),
                             )));
                   },
                 ));

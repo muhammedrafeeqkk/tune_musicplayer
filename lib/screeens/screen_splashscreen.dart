@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
-import 'package:music_player/screeens/home.dart';
-import 'package:music_player/widgets/homepagewidgets.dart';
+import 'package:music_player/screeens/screen_home.dart';
+
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 

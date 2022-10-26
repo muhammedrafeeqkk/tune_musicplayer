@@ -1,13 +1,39 @@
 // ignore_for_file: sort_child_properties_last
 
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../shortcuts/shortcuts.dart';
 
-class userscreen extends StatelessWidget {
-  const userscreen({Key? key}) : super(key: key);
+class userscreen extends StatefulWidget {
+  userscreen({Key? key}) : super(key: key);
+
+  @override
+  State<userscreen> createState() => _userscreenState();
+}
+
+class _userscreenState extends State<userscreen> {
+  TextEditingController textcontroller = TextEditingController();
+
+  String? profileusername;
+
+  savetostorage() async {
+    SharedPreferences sharedpref = await SharedPreferences.getInstance();
+
+    final String username = sharedpref.getString('user_key').toString();
+    setState(() {
+      profileusername = username;
+      final oldnamestored = sharedpref.getString('user_key').toString();
+    });
+    if (profileusername == null) {
+      profileusername = 'HEY';
+    } else {
+      setState(() {
+        profileusername = username;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +48,7 @@ class userscreen extends StatelessWidget {
               padding: EdgeInsets.only(
                   top: screenHeight * 0.11, left: screenwidth * 0.08),
               child: Text(
-                'HEY....',
+                profileusername ?? 'hey',
                 style: TextStyle(
                   fontSize: 55,
                   fontWeight: FontWeight.w700,
@@ -59,6 +85,7 @@ class userscreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: TextField(
+                controller: textcontroller,
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.symmetric(vertical: 15),
                     prefixIcon: Icon(Icons.person),
@@ -71,7 +98,9 @@ class userscreen extends StatelessWidget {
             ),
             Center(
                 child: ElevatedButton(
-              onPressed: () {},
+              onPressed: () {
+                usernameedit();
+              },
               child: Text('submit'),
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(pink),
@@ -81,5 +110,11 @@ class userscreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  usernameedit() async {
+    TextEditingController textcontroller = TextEditingController();
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    final String oldnamestored = preferences.getString('user_key').toString();
   }
 }

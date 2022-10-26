@@ -1,14 +1,15 @@
 import 'dart:ffi';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
-import 'package:music_player/screeens/home.dart';
+import 'package:music_player/screeens/screen_home.dart';
 
 import 'package:music_player/shortcuts/shortcuts.dart';
-import 'package:music_player/widgets/miniplayer.dart';
+
 import 'package:music_player/widgets/music.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 
@@ -18,8 +19,9 @@ class screencarlibrary extends StatefulWidget {
   screencarlibrary({
     Key? key,
     required this.newkeys,
-    required this.index,
+    required this.index, required this.audioPlayer,
   }) : super(key: key);
+  final AssetsAudioPlayer audioPlayer;
   final String newkeys;
   final index;
   @override
@@ -104,7 +106,7 @@ class _screencarlibraryState extends State<screencarlibrary> {
                             : ListView.builder(
                                 itemCount: songlist.length,
                                 itemBuilder: (context, index) {
-                                  return Musics(
+                                  return Musics(audioPlayer:widget.audioPlayer ,
                                     index: index,
                                     item: songlist,
                                     iconwant: true,
@@ -117,7 +119,7 @@ class _screencarlibraryState extends State<screencarlibrary> {
                       })),
             ),
           ),
-          Expanded(flex: 3, child: miniplayer())
+         
         ],
       ),
     );

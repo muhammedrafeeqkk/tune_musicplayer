@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:just_audio_background/just_audio_background.dart';
+
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 
-import 'package:music_player/screeens/splshscreen.dart';
+import 'package:music_player/screeens/screen_splashscreen.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
 Future<void> main() async {
@@ -12,12 +12,9 @@ Future<void> main() async {
   if (!Hive.isAdapterRegistered(DBSongsAdapter().typeId)) {
     Hive.registerAdapter(DBSongsAdapter());
   }
-  //backgroung notification
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.ryanheise.bg_demo.channel.audio',
-    androidNotificationChannelName: 'Audio playback',
-    androidNotificationOngoing: true,
-  );
+if (!Hive.isAdapterRegistered(DBDetailsAdapter().typeId)) {
+  Hive.registerAdapter(DBDetailsAdapter());
+}
   //all songs hive box opening
   await Hive.openBox<DBSongs>('Allsongs');
   //adding_list hive box opening

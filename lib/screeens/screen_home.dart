@@ -1,22 +1,23 @@
-import 'package:anim_search_bar/anim_search_bar.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
+import 'package:music_player/screeens/screen_drawer.dart';
 import 'package:music_player/screeens/screen_search.dart';
-import 'package:music_player/screeens/screenfavorites.dart';
-import 'package:music_player/screeens/screenliabrary.dart';
-import 'package:music_player/screeens/screenrecent.dart';
-import 'package:music_player/screeens/userpage.dart';
+import 'package:music_player/screeens/screen_favorites.dart';
+import 'package:music_player/screeens/screen%20_liabrary.dart';
+import 'package:music_player/screeens/screen_recent.dart';
+import 'package:music_player/screeens/screen_user.dart';
 
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/homepagewidgets.dart';
 import 'package:music_player/widgets/drewbaritems.dart';
-import 'package:music_player/widgets/miniplayer.dart';
+
 import 'package:music_player/widgets/music.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 ValueNotifier<int> onPressedIndex = ValueNotifier(0);
 
@@ -26,11 +27,14 @@ class myhome extends StatefulWidget {
   @override
   State<myhome> createState() => _myhomeState();
 }
+//////////////////////////////
+
+///////////////////////
 
 class _myhomeState extends State<myhome> {
   final textController = TextEditingController();
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
-
+  final AssetsAudioPlayer audioPlayer = AssetsAudioPlayer.withId('0');
   List<SongModel> Allsongs = [];
   Box<DBSongs> getboxsongs = get_allsongsbox();
   List<DBSongs> Songlist = [];
@@ -48,51 +52,14 @@ class _myhomeState extends State<myhome> {
   }
 
   Widget build(BuildContext context) {
+   
     final List<DBSongs> dbSongList =
         getboxsongs.values.toList().cast<DBSongs>();
     final screenwidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
     return Scaffold(
       key: scaffoldKey,
-      drawer: Drawer(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topRight: Radius.circular(190),
-          ),
-        ),
-        backgroundColor: grey,
-        width: screenwidth * 0.61,
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top: screenHeight * 0.25),
-              child: Container(
-                width: double.infinity,
-                height: screenHeight * 0.65,
-                child: Column(
-                  children: [
-                    drewbaritems1(text: 'NOTIFICATION'),
-                    sizedspace(context),
-                    drewbaritems1(text: "DARK MODE"),
-                    sizedspace(context),
-                    drewbaritems2(context, text3: 'About'),
-                    sizedspace(context),
-                    drewbaritems2(context, text3: 'Privacy'),
-                    sizedspace(context),
-                    drewbaritems2(context, text3: 'License'),
-                    sizedspace(context),
-                    drewbaritems2(context, text3: 'share'),
-                  ],
-                ),
-              ),
-            ),
-            Text(
-              'VERSION\n    0.0.1',
-              style: TextStyle(color: liteblack, fontSize: 10),
-            )
-          ],
-        ),
-      ),
+      drawer: drawer(screenwidth: screenwidth, screenHeight: screenHeight),
       appBar: AppBar(
         backgroundColor: darkblack,
         title: Padding(
@@ -122,7 +89,8 @@ class _myhomeState extends State<myhome> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => SearchScreen(),
+                                          builder: (context) => SearchScreen(
+                                              audioPlayer: audioPlayer),
                                         ));
                                   },
                                   icon: Icon(Icons.search)),
@@ -149,7 +117,7 @@ class _myhomeState extends State<myhome> {
                                       builder: ((context) => userscreen())))),
                               child: CircleAvatar(
                                 backgroundImage:
-                                    AssetImage('assets/images/avatharlogo.jpg'),
+                                    AssetImage('assets/images/tune.png'),
                               ),
                             ),
                           ],
@@ -220,12 +188,12 @@ class _myhomeState extends State<myhome> {
                                   onTap: () => Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ScreenFavorites(),
+                                      builder: (context) => ScreenFavorites(
+                                          audioPlayer: audioPlayer),
                                     ),
                                   ),
                                   child: const shortcutwidgets(
-                                    imageurl:
-                                        'https://images.unsplash.com/photo-1517409091671-180985f2ca15?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwcm9maWxlLXBhZ2V8NHx8fGVufDB8fHx8&auto=format&fit=crop&w=500&q=60',
+                                    imageurl: 'assets/images/recent1.jpg',
                                     text: 'MY\nFAVORITE',
                                   ),
                                 ),
@@ -236,8 +204,7 @@ class _myhomeState extends State<myhome> {
                                           builder: ((context) =>
                                               ScreenRecent()))),
                                   child: const shortcutwidgets(
-                                    imageurl:
-                                        'https://images.unsplash.com/photo-1549349807-4575e87c7e6a?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=442&q=80',
+                                    imageurl: 'assets/images/favorites1.jpg',
                                     text: 'RECENT',
                                   ),
                                 ),
@@ -246,11 +213,11 @@ class _myhomeState extends State<myhome> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => ScreenLibrary(
+                                                audioPlayer: audioPlayer,
                                                 item: dbSongList,
                                               ))),
                                   child: const shortcutwidgets(
-                                    imageurl:
-                                        'https://images.unsplash.com/photo-1628288277962-e4dbf53f9aac?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+                                    imageurl: 'assets/images/library.jpg',
                                     text: 'MY\nLIBRARY',
                                   ),
                                 )
@@ -280,6 +247,7 @@ class _myhomeState extends State<myhome> {
                                           itemCount: dbSongList.length,
                                           itemBuilder: (context, index) {
                                             return Musics(
+                                              audioPlayer: audioPlayer,
                                               isithomepage: true,
                                               iconwant: true,
                                               conditionalicon: true,
@@ -288,49 +256,26 @@ class _myhomeState extends State<myhome> {
                                               playlistname: '',
                                             );
                                           });
-                                    }))
-                            //  FutureBuilder<List<SongModel>>(
-                            //   future: _audioQuery.querySongs(
-                            //       sortType: SongSortType.TITLE,
-                            //       orderType: OrderType.ASC_OR_SMALLER,
-                            //       uriType: UriType.EXTERNAL,
-                            //       ignoreCase: true),
-                            //   builder: (context, item) {
-                            //     if (item.data == null) {
-                            //       return Center(
-                            //         child: CircularProgressIndicator(),
-                            //       );
-                            //     }
-                            //     if (item.data!.isEmpty) {
-                            //       return Center(child: Text('NO Songs'));
-                            //     }
-                            //     return ListView.builder(
-                            //       itemCount: item.data?.length,
-                            //       shrinkWrap: true,
-                            //       physics: ScrollPhysics(),
-                            //       itemBuilder: (context, index) {
-
-                            //       },
-                            //     );
-                            //   },
-                            // ),
-                            ),
+                                    }))),
                       ],
                     ),
                   ),
                 ],
               )),
-          Expanded(
-              flex: 2,
-              child: SingleChildScrollView(
-                child: Container(
-                  child: Column(
-                    children: [miniplayer()],
-                  ),
-                ),
-              ))
         ],
       ),
     );
+  }
+
+  getsavedata() async {
+    final sharedpref = await SharedPreferences.getInstance();
+    final savedvalue = sharedpref.getString('saved_value');
+    if (savedvalue != null) {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => userscreen(),
+          ));
+    }
   }
 }

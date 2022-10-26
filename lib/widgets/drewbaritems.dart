@@ -4,9 +4,23 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
-class drewbaritems1 extends StatelessWidget {
-  const drewbaritems1({Key? key, required this.text}) : super(key: key);
+class drewbaritems1 extends StatefulWidget {
+  const drewbaritems1(
+      {Key? key,
+      required this.text,
+      required this.message,
+      required this.notibackclr})
+      : super(key: key);
   final String text;
+  final String message;
+  final Color notibackclr;
+
+  @override
+  State<drewbaritems1> createState() => _drewbaritems1State();
+}
+
+class _drewbaritems1State extends State<drewbaritems1> {
+  bool mySwitch = true;
   @override
   Widget build(
     BuildContext context,
@@ -25,17 +39,54 @@ class drewbaritems1 extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(
               left: screenHeight * 0.030, top: screenHeight * 0.011),
-          child: Text(text,
+          child: Text(widget.text,
               style: TextStyle(
                   fontSize: 15, color: grey, fontWeight: FontWeight.w500)),
         ),
         Padding(
           padding: EdgeInsets.only(
               left: screenHeight * 0.06, top: screenHeight * 0.02),
-          child: Switch(value: true, onChanged: ((value) {})),
+          child: Switch(
+              activeColor: purewhite,
+              value: mySwitch,
+              onChanged: ((bool value) {
+                setState(() {
+                  mySwitch = value;
+                });
+                notisnackbar(
+                    message: widget.message, notibackclr: widget.notibackclr);
+                Navigator.pop(context);
+              })),
         )
       ],
     );
+  }
+
+  notisnackbar({required String message, required Color notibackclr}) {
+    return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18), topRight: Radius.circular(18)),
+      ),
+      duration: const Duration(seconds: 1),
+      backgroundColor: notibackclr,
+      content: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Center(
+            child: Text(
+              message,
+              style: TextStyle(
+                color: purewhite,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    ));
   }
 }
 

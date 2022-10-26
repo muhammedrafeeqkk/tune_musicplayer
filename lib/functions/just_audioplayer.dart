@@ -1,19 +1,32 @@
-import 'package:just_audio/just_audio.dart';
-import 'package:on_audio_query/on_audio_query.dart';
+import 'package:assets_audio_player/assets_audio_player.dart';
 
-final OnAudioQuery _audioQuery = OnAudioQuery();
-AudioPlayer audioPlayer = AudioPlayer();
 
-class JustAudio {
-  static nextplay() {
-    if (audioPlayer.hasNext) {
-      audioPlayer.seekToNext();
+bool nextDone = true;
+bool previousDone = true;
+
+class assetAudioplayineTools {
+  static nextplay({required AssetsAudioPlayer audioPlayer}) async {
+    if (nextDone) {
+      nextDone = false;
+      await audioPlayer.next();
+      nextDone = true;
     }
   }
 
-  static previousplay() {
-    if (audioPlayer.hasPrevious) {
-      audioPlayer.seekToPrevious();
+  static previousplay({required AssetsAudioPlayer audioPlayer}) async {
+    if (previousDone) {
+      previousDone = false;
+      await audioPlayer.previous();
+      previousDone = true;
     }
+  }
+
+  static playbutton({required AssetsAudioPlayer audioPlayer}) {
+    audioPlayer.playOrPause();
+  
+  }
+
+  static shufflesong( { required AssetsAudioPlayer audioPlayer} ){
+    audioPlayer.shuffle;
   }
 }

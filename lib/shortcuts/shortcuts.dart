@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 Color darkblack = Colors.black;
-Color skyblack = Color(0xFF302C2C);
+Color skyblack = Color.fromARGB(255, 39, 38, 38);
 Color grey = Color(0xFF808080);
 Color white = Colors.white60;
 Color purewhite = Colors.white;

@@ -29,9 +29,14 @@ class _shortcutwidgetsState extends State<shortcutwidgets> {
         Container(
           margin: EdgeInsets.only(right: 10),
           decoration: BoxDecoration(
+
+
+
+
+
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                  image: NetworkImage(widget.imageurl), fit: BoxFit.cover)),
+                  image: AssetImage(widget.imageurl), fit: BoxFit.cover)),
           height: screenHeight * 0.40,
           width: screenWidth * 0.33,
         ),
@@ -49,7 +54,6 @@ class _shortcutwidgetsState extends State<shortcutwidgets> {
   }
 }
 
-
 Widget allsongs(BuildContext context) {
   final screenHeight = MediaQuery.of(context).size.height;
   return Padding(
@@ -60,16 +64,3 @@ Widget allsongs(BuildContext context) {
     ),
   );
 }
-
-// IconData isThisFavourite({required String id,required SongTypes}) {
-//     final List<SongTypes> allsongs = songBox.values.toList().cast();
-
-//     List<SongTypes> favSongList =
-//         PlaylistBox.get('favourites')!.toList().cast<SongTypes>();
-
-//     SongTypes favsong = allsongs.firstWhere((song) => song.id.contains(id));
-
-//     return favSongList.where((song) => song.id == favsong.id).isEmpty
-//         ? Icons.favorite_outline_outlined
-//         : Icons.favorite;
-//   }

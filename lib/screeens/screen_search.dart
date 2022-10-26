@@ -1,18 +1,19 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/foundation/key.dart';
-import 'package:flutter/src/widgets/framework.dart';
+
+
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
-import 'package:music_player/functions/just_audioplayer.dart';
-import 'package:music_player/screeens/home.dart';
+
+
 import 'package:music_player/shortcuts/shortcuts.dart';
-import 'package:music_player/widgets/homepagewidgets.dart';
-import 'package:music_player/widgets/miniplayer.dart';
+
 import 'package:music_player/widgets/music.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  const SearchScreen({Key? key, required this.audioPlayer}) : super(key: key);
+  final AssetsAudioPlayer audioPlayer;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -22,6 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Box<DBSongs> allsongBox = get_allsongsbox();
   List<DBSongs>? ddbSongs;
   List<DBSongs>? searchedSongs;
+  
 
   @override
   void initState() {
@@ -85,7 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
                         physics: const ScrollPhysics(),
                         itemCount: searchedSongs!.length,
                         itemBuilder: (context, index) {
-                          return Musics(
+                          return Musics(audioPlayer:widget.audioPlayer ,
                             index: index,
                             item: searchedSongs!,
                             iconwant: true,
@@ -95,7 +97,7 @@ class _SearchScreenState extends State<SearchScreen> {
                           );
                         }),
               )),
-          Expanded(flex: 3, child: miniplayer())
+       
         ],
       ),
     );
