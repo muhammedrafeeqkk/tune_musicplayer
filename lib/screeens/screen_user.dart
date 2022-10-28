@@ -1,5 +1,7 @@
 // ignore_for_file: sort_child_properties_last
 
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,29 +16,51 @@ class userscreen extends StatefulWidget {
 }
 
 class _userscreenState extends State<userscreen> {
+  getNamefromStorage() async {
+    final sharedprefs = await SharedPreferences.getInstance();
+    final name = sharedprefs.getString('user_key');
+    if (name!.isEmpty || name == null) {
+      setState(() {
+        profileusername = 'Hey';
+        return;
+      });
+    }
+    setState(() {
+      profileusername = name;
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getNamefromStorage();
+  }
+
   TextEditingController textcontroller = TextEditingController();
 
   String? profileusername;
 
-  savetostorage() async {
+  saveNameToStorage() async {
     SharedPreferences sharedpref = await SharedPreferences.getInstance();
 
-    final String username = sharedpref.getString('user_key').toString();
-    setState(() {
-      profileusername = username;
-      final oldnamestored = sharedpref.getString('user_key').toString();
-    });
-    if (profileusername == null) {
-      profileusername = 'HEY';
-    } else {
+    var username = textcontroller.text.trim();
+    if (username == null || username.isEmpty) {
       setState(() {
-        profileusername = username;
+        username = 'Hey';
+        return;
       });
     }
+    await sharedpref.setString('user_key', username);
+    setState(() {
+      profileusername = username;
+    });
+    log(username);
   }
 
   @override
   Widget build(BuildContext context) {
+    getNamefromStorage();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -46,30 +70,30 @@ class _userscreenState extends State<userscreen> {
           children: [
             Padding(
               padding: EdgeInsets.only(
-                  top: screenHeight * 0.11, left: screenwidth * 0.08),
+                  top: screenHeight * 0.11, left: screenwidth * 0.1),
               child: Text(
-                profileusername ?? 'hey',
+                profileusername ??= 'Hay',
                 style: TextStyle(
-                  fontSize: 55,
+                  fontSize: 40,
                   fontWeight: FontWeight.w700,
                   color: grey,
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: screenwidth * 0.12),
+              padding: EdgeInsets.only(left: screenwidth * 0.11),
               child: Text(
                 'welcome',
                 style: TextStyle(
-                    fontSize: 21, fontWeight: FontWeight.w500, color: grey),
+                    fontSize: 18, fontWeight: FontWeight.w500, color: grey),
               ),
             ),
             Padding(
-              padding: EdgeInsets.only(left: screenwidth * 0.08),
+              padding: EdgeInsets.only(left: screenwidth * 0.1),
               child: Text(
                 'TO',
                 style: TextStyle(
-                    fontSize: 55,
+                    fontSize: 40,
                     fontWeight: FontWeight.w700,
                     color: Colors.white12),
               ),
@@ -99,7 +123,8 @@ class _userscreenState extends State<userscreen> {
             Center(
                 child: ElevatedButton(
               onPressed: () {
-                usernameedit();
+                saveNameToStorage();
+                log(profileusername!);
               },
               child: Text('submit'),
               style: ButtonStyle(
@@ -112,9 +137,10 @@ class _userscreenState extends State<userscreen> {
     );
   }
 
-  usernameedit() async {
-    TextEditingController textcontroller = TextEditingController();
-    SharedPreferences preferences = await SharedPreferences.getInstance();
-    final String oldnamestored = preferences.getString('user_key').toString();
-  }
+  // usernameedit() async {
+  //   TextEditingController textcontroller = TextEditingController();
+  //   final preferences = await SharedPreferences.getInstance();
+
+  //   preferences.setString('user_key', textcontroller.text);
+  // }
 }

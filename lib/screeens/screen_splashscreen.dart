@@ -19,22 +19,16 @@ class _splashscreenState extends State<splashscreen> {
   List<SongModel> deviceAllSongs = [];
   Box<DBSongs> allsongbox = get_allsongsbox();
   Box<List> adding_lists = get_adding_lists();
-  List<DBSongs> favsongs = [];
 
   @override
   void initState() {
     super.initState();
 
-    requestpermission();
     allDevicesong();
-    _navigatetohome();
-  }
-
-  requestpermission() {
-    Permission.storage.request();
   }
 
   Future allDevicesong() async {
+    await Permission.storage.request();
     deviceAllSongs = await _onAudioQuery.querySongs(
       sortType: SongSortType.DISPLAY_NAME,
       orderType: OrderType.ASC_OR_SMALLER,
@@ -53,11 +47,19 @@ class _splashscreenState extends State<splashscreen> {
       await allsongbox.put(song.id, song);
     }
     Getfavsongs();
+    GetRecentSongs();
+    _navigatetohome();
   }
 
   Future Getfavsongs() async {
     if (!adding_lists.keys.contains('favorites')) {
-      await adding_lists.put('favorites', favsongs);
+      await adding_lists.put('favorites', []);
+    }
+  }
+
+  GetRecentSongs() async {
+    if (!adding_lists.keys.contains('recent')) {
+      await adding_lists.put('recent', []);
     }
   }
 

@@ -1,101 +1,165 @@
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/adapters.dart';
+import 'package:music_player/db/db_functions/db_function.dart';
+import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/homepagewidgets.dart';
+import 'package:music_player/widgets/music.dart';
 
+class ScreenRecent extends StatefulWidget {
+  ScreenRecent({Key? key, required this.audioplayer}) : super(key: key);
 
-class ScreenRecent extends StatelessWidget {
-  ScreenRecent({Key? key}) : super(key: key);
+  final AssetsAudioPlayer audioplayer;
+  @override
+  State<ScreenRecent> createState() => _ScreenRecentState();
+}
+
+class _ScreenRecentState extends State<ScreenRecent> {
+  List<DBSongs> Songlist = [];
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
+  final Box<List> getlistsongsbox = get_adding_lists();
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Songlist = getlistsongsbox.get('recent')!.toList().cast<DBSongs>();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-        key: scaffoldKey,
-        appBar: AppBar(
-            title: Padding(
-              padding: EdgeInsets.only(left: screenWidth * 0.25),
-              child: Text('Recent'),
-            ),
-            actions: [
-              IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            shape: RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(32.0))),
-                            title: Text(
-                              'Are You Sure',
+      key: scaffoldKey,
+      appBar: AppBar(
+          title: Padding(
+            padding: EdgeInsets.only(left: screenWidth * 0.25),
+            child: Text('Recent'),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          shape: RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(32.0))),
+                          title: Text(
+                            'WANT TO CLEAR RECENT',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, 'NO'),
+                              child: const Text('NO'),
                             ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context, 'NO'),
-                                child: const Text('NO'),
-                              ),
-                              TextButton(onPressed: () {}, child: Text('YES'))
-                            ],
-                            // titlePadding:
-                            //     EdgeInsets.only(top: screenHeight * 0.06),
-                          ));
-                },
-                icon: Icon(
-                  Icons.delete_outline,
-                  size: 30,
-                ),
-              )
-            ]),
-        body: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Column(
-                children: [
-                  librarytext(),
-                  Expanded(
-                    child: ListView(
-                      children: [
-                        Center(
-                            child: Text(
-                          ' No  Library Found....',
-                          style: TextStyle(color: grey),
-                        ))
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-            Expanded(
-                flex: 9,
-                child: Column(
-                  children: [
-                    songtext(),
-                    Expanded(
-                        child: Padding(
-                      padding: EdgeInsets.only(
-                          left: screenWidth * 0.02, right: screenWidth * 0.02),
-                      child: Container(
-                        height: double.infinity,
-                        decoration: BoxDecoration(
-                            color: liteblack,
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(20),
-                                topRight: Radius.circular(20))),
-                        child: ListView(
-                          children: [
-                       
+                            TextButton(
+                                onPressed: () {
+                                  getlistsongsbox.put('recent', []);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                                child: Text('YES'))
                           ],
-                        ),
-                      ),
-                    ))
-                  ],
+                          // titlePadding:
+                          //     EdgeInsets.only(top: screenHeight * 0.06),
+                        ));
+              },
+              icon: Icon(
+                Icons.delete_outline,
+                size: 30,
+              ),
+            )
+          ]),
+      body: Column(
+        children: [
+          songtext(),
+          Expanded(
+              child: Padding(
+            padding: EdgeInsets.only(
+                left: screenWidth * 0.02, right: screenWidth * 0.02),
+            child: Container(
+                height: double.infinity,
+                decoration: BoxDecoration(
+                    color: liteblack,
+                    borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20))),
+                child: ValueListenableBuilder(
+                  valueListenable: getlistsongsbox.listenable(),
+                  builder: (context, value, child) {
+                    return Songlist.isEmpty
+                        ? Center(child: Text('NO SONGS'))
+                        : ListView.builder(
+                            itemCount: Songlist.length,
+                            itemBuilder: (context, index) {
+                              return Musics(
+                                index: index,
+                                item: Songlist,
+                                iconwant: true,
+                                isithomepage: true,
+                                playlistname: 'recent',
+                                audioPlayer: widget.audioplayer,
+                                conditionalicon: true,
+                              );
+                            },
+                          );
+                  },
                 )),
-          
-          ],
-        ));
+          ))
+        ],
+      ),
+      // body: Column(
+      //   children: [
+      //     Expanded(
+      //       flex: 3,
+      //       child: Column(
+      //         children: [
+      //           librarytext(),
+      //           Expanded(
+      //             child: ListView(
+      //               children: [
+      //                 Center(
+      //                     child: Text(
+      //                   ' No  Library Found....',
+      //                   style: TextStyle(color: grey),
+      //                 ))
+      //               ],
+      //             ),
+      //           )
+      //         ],
+      //       ),
+      //     ),
+      //     Expanded(
+      //         flex: 9,
+      //         child: Column(
+      // children: [
+      //   songtext(),
+      //   Expanded(
+      //       child: Padding(
+      //     padding: EdgeInsets.only(
+      //         left: screenWidth * 0.02, right: screenWidth * 0.02),
+      //     child: Container(
+      //       height: double.infinity,
+      //       decoration: BoxDecoration(
+      //           color: liteblack,
+      //           borderRadius: BorderRadius.only(
+      //               topLeft: Radius.circular(20),
+      //               topRight: Radius.circular(20))),
+      //       // child: ListView.builder(itemBuilder: (context, index) {
+      //       //   return Musics(index: index, item: , iconwant: iconwant, isithomepage: isithomepage, playlistname: playlistname, audioPlayer: audioPlayer);
+      //       // },)
+      //     ),
+      //   ))
+      // ],
+      //         )),
+      //   ],
+      // )
+    );
   }
 }
 

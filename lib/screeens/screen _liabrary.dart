@@ -39,12 +39,11 @@ class _ScreenLibraryState extends State<ScreenLibrary> {
   }
 
   Widget build(BuildContext context) {
-   
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     Box<List> getplaylistBox = get_adding_lists();
     ////////////////////////////////////
-     final songId = widget.audioPlayer.id;
+    final songId = widget.audioPlayer.id;
     final currentindex = currentsongindex(songId: songId);
 
     PlayerBuilder.isPlaying(
@@ -77,6 +76,7 @@ class _ScreenLibraryState extends State<ScreenLibrary> {
               builder: (context, value, child) {
                 List<String> keys = getplaylistBox.keys.toList().cast();
                 keys.removeWhere((item) => item.contains('favorites'));
+                keys.removeWhere((item) => item.contains('recent'));
 
                 return Expanded(
                   flex: 14,

@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/favorites.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
+import 'package:music_player/functions/recent.dart';
 import 'package:music_player/screeens/screen__nowplaying.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:on_audio_query/on_audio_query.dart';
+
 List<Audio> songAudioList = [];
+
 class MiniPlayer extends StatefulWidget {
   const MiniPlayer(
       {Key? key,
@@ -23,8 +26,6 @@ class MiniPlayer extends StatefulWidget {
 }
 
 class _MiniPlayerState extends State<MiniPlayer> {
-  
-
   Audio find(List<Audio> source, String fromPath) {
     return source.firstWhere((element) => element.path == fromPath);
   }
@@ -62,6 +63,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
     return widget.audioPlayer.builderCurrent(
       builder: (context, playing) {
         final myAudio = find(songAudioList, playing.audio.assetAudioPath);
+        recent.addingSonginRecent(SongId: myAudio.metas.id!);
         return Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.only(

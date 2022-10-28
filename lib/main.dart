@@ -12,9 +12,7 @@ Future<void> main() async {
   if (!Hive.isAdapterRegistered(DBSongsAdapter().typeId)) {
     Hive.registerAdapter(DBSongsAdapter());
   }
-if (!Hive.isAdapterRegistered(DBDetailsAdapter().typeId)) {
-  Hive.registerAdapter(DBDetailsAdapter());
-}
+
   //all songs hive box opening
   await Hive.openBox<DBSongs>('Allsongs');
   //adding_list hive box opening

@@ -19,13 +19,5 @@ class DBSongs {
     required this.uri,
   });
 }
-@HiveType(typeId: 1)
-class DBDetails{
-  @HiveField(0)
-  final String name;
 
-  DBDetails({
-required this.name,
-  });
-}
 

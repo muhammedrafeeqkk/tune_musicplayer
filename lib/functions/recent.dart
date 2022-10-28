@@ -8,7 +8,7 @@ class recent {
   static addingSonginRecent({required String SongId}) async {
     final List<DBSongs> allsongs = getAllSongs.values.toList().cast<DBSongs>();
     final List<DBSongs> RecentSongList =
-        getplaylistBox.get('Recent')!.toList().cast<DBSongs>();
+        getplaylistBox.get('recent')!.toList().cast<DBSongs>();
     final DBSongs recentSong =
         allsongs.firstWhere((song) => song.id.contains(SongId));
     if (RecentSongList.length >= 10) {

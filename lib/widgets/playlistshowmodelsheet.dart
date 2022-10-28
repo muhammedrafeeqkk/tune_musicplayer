@@ -87,7 +87,11 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
               valueListenable: getplaylistBox.listenable(),
               builder: (context, value, child) {
                 List<String> keys = getplaylistBox.keys.toList().cast();
-                keys.removeWhere((item) => item.contains('favorites'));
+                keys.removeWhere((item) => item.contains(
+                      'favorites',
+                    ));
+
+                keys.removeWhere((element) => element.contains('recent'));
 
                 return Expanded(
                     child: ListView.separated(

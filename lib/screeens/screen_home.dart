@@ -52,7 +52,6 @@ class _myhomeState extends State<myhome> {
   }
 
   Widget build(BuildContext context) {
-   
     final List<DBSongs> dbSongList =
         getboxsongs.values.toList().cast<DBSongs>();
     final screenwidth = MediaQuery.of(context).size.width;
@@ -69,62 +68,69 @@ class _myhomeState extends State<myhome> {
       ),
       body: Column(
         children: [
-          Container(
-            height: 50,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10), color: grey),
-            child: Row(
-              children: [
-                Expanded(
-                    flex: 2,
-                    child: Padding(
-                      padding: EdgeInsets.all(screenwidth * 0.02),
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              child: IconButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => SearchScreen(
-                                              audioPlayer: audioPlayer),
-                                        ));
-                                  },
-                                  icon: Icon(Icons.search)),
-                            ),
-
-                            // AnimSearchBar(
-                            //   color: skyblack,
-                            //   closeSearchOnSuffixTap: true,
-                            //   autoFocus: true,
-                            //   helpText: "Search Your Song !!!!",
-                            //   style: TextStyle(color: white),
-                            //   width: 200,
-                            //   textController: textController,
-                            //   onSuffixTap: () {
-                            //     setState(() {
-
-                            //     });
-                            //   },
-                            // ),
-                            GestureDetector(
-                              onTap: (() => Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: ((context) => userscreen())))),
-                              child: CircleAvatar(
-                                backgroundImage:
-                                    AssetImage('assets/images/tune.png'),
+          GestureDetector(
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SearchScreen(audioPlayer: audioPlayer),
+                )),
+            child: Container(
+              height: 50,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10), color: grey),
+              child: Row(
+                children: [
+                  Expanded(
+                      flex: 2,
+                      child: Padding(
+                        padding: EdgeInsets.all(screenwidth * 0.02),
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                child: IconButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => SearchScreen(
+                                                audioPlayer: audioPlayer),
+                                          ));
+                                    },
+                                    icon: Icon(Icons.search)),
                               ),
-                            ),
-                          ],
+
+                              // AnimSearchBar(
+                              //   color: skyblack,
+                              //   closeSearchOnSuffixTap: true,
+                              //   autoFocus: true,
+                              //   helpText: "Search Your Song !!!!",
+                              //   style: TextStyle(color: white),
+                              //   width: 200,
+                              //   textController: textController,
+                              //   onSuffixTap: () {
+                              //     setState(() {
+
+                              //     });
+                              //   },
+                              // ),
+                              GestureDetector(
+                                onTap: (() => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: ((context) => userscreen())))),
+                                child: CircleAvatar(
+                                  backgroundImage:
+                                      AssetImage('assets/images/tune.png'),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    )),
-              ],
+                      )),
+                ],
+              ),
             ),
           ),
           Expanded(
@@ -135,14 +141,14 @@ class _myhomeState extends State<myhome> {
                     child: Column(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(right: 180),
+                          padding: const EdgeInsets.only(right: 200),
                           child: Column(
                             children: [
                               SizedBox(height: screenHeight * 0.03),
                               Text(
                                 'TO PLAY',
                                 style: TextStyle(
-                                  fontSize: 40,
+                                  fontSize: 35,
                                   fontWeight: FontWeight.w700,
                                   color: grey,
                                 ),
@@ -153,18 +159,18 @@ class _myhomeState extends State<myhome> {
                                 child: Text(
                                   'without',
                                   style: TextStyle(
-                                      fontSize: 21,
+                                      fontSize: 19,
                                       fontWeight: FontWeight.w500,
                                       color: grey),
                                 ),
                               ),
                               Padding(
                                 padding:
-                                    EdgeInsets.only(left: screenwidth * 0.05),
+                                    EdgeInsets.only(left: screenwidth * 0.02),
                                 child: const Text(
                                   'PASSION',
                                   style: TextStyle(
-                                      fontSize: 40,
+                                      fontSize: 35,
                                       fontWeight: FontWeight.w700,
                                       color: Colors.white12),
                                 ),
@@ -201,8 +207,9 @@ class _myhomeState extends State<myhome> {
                                   onTap: () => Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: ((context) =>
-                                              ScreenRecent()))),
+                                          builder: ((context) => ScreenRecent(
+                                                audioplayer: audioPlayer,
+                                              )))),
                                   child: const shortcutwidgets(
                                     imageurl: 'assets/images/favorites1.jpg',
                                     text: 'RECENT',

@@ -55,6 +55,7 @@ class _MusicsState extends State<Musics> {
             builder: (BuildContext context, int value, Widget? child) {
               return ListTile(
                 onTap: () {
+                  
                   newminiplayer(
                       audioPlayer: widget.audioPlayer,
                       context: context,
@@ -231,6 +232,7 @@ class _MusicsState extends State<Musics> {
                         color: darkblack),
                     child: GestureDetector(
                       onTap: () {
+                        
                         newminiplayer(
                             context: context,
                             item: widget.item,
@@ -242,36 +244,7 @@ class _MusicsState extends State<Musics> {
                         color: purewhite,
                       ),
                     )),
-                // Container(
-                //     height: screenHeight * 0.04,
-                //     width: screenWidth * 0.09,
-                //     decoration: BoxDecoration(
-                //         borderRadius: BorderRadius.circular(5),
-                //         color: darkblack),
-                //     child:
-                //         //  PlayerBuilder.isPlaying(
-                //         //     player: widget.audioPlayer,
-                //         //     builder: (context, isplaying) {
-                //         //       return
-                //         IconButton(
-                //             onPressed: () {
-                //               newminiplayer(
-                //                   context: context,
-                //                   item: widget.item,
-                //                   index: widget.index,
-                //                   audioPlayer: widget.audioPlayer);
-                //               // setState(() {
-                //               //   assetAudioplayineTools.playbutton(
-                //               //       audioPlayer: widget.audioPlayer);
-                //               // });
-                //             },
-                //             icon: Icon(
-                //               // isplaying ? Icons.pause :
-                //               Icons.play_arrow,
-                //               color: purewhite,
-                //             ))
-                //     // })
-                //     ),
+              
                 widget.iconwant == true
                     ? widget.conditionalicon == true
                         ? ValueListenableBuilder(

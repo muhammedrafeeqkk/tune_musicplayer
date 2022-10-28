@@ -90,14 +90,19 @@ class _drewbaritems1State extends State<drewbaritems1> {
   }
 }
 
-Widget sizedspace(BuildContext context) {
+Widget sizedspace(
+  BuildContext context,
+) {
   final screenwidth = MediaQuery.of(context).size.width;
   return SizedBox(
     height: screenwidth * 0.035,
   );
 }
 
-Widget drewbaritems2(BuildContext context, {required text3}) {
+Widget drewbaritems2(
+  BuildContext context, {
+  required text3,
+}) {
   final screenwidth = MediaQuery.of(context).size.width;
   final screenHeight = MediaQuery.of(context).size.height;
 
