@@ -6,39 +6,39 @@ import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
-import 'package:music_player/screeens/screen_home.dart';
 
 import 'package:music_player/shortcuts/shortcuts.dart';
 
 import 'package:music_player/widgets/music.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 
-import '../widgets/homepagewidgets.dart';
+import '../../widgets/homepagewidgets.dart';
 
-class screencarlibrary extends StatefulWidget {
+class screencarlibrary extends StatelessWidget {
   screencarlibrary({
     Key? key,
     required this.newkeys,
-    required this.index, required this.audioPlayer,
+    required this.index,
+    required this.audioPlayer,
   }) : super(key: key);
   final AssetsAudioPlayer audioPlayer;
   final String newkeys;
   final index;
-  @override
-  State<screencarlibrary> createState() => _screencarlibraryState();
-}
+//   @override
+//   State<screencarlibrary> createState() => _screencarlibraryState();
+// }
 
-class _screencarlibraryState extends State<screencarlibrary> {
+// class _screencarlibraryState extends State<screencarlibrary> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   Box<List> getplaylistBox = get_adding_lists();
   // List<DBSongs> songlist = [];
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    // songlist = getplaylistBox.get(widget.newkeys)!.toList().cast<DBSongs>();
-  }
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+  //   // songlist = getplaylistBox.get(widget.newkeys)!.toList().cast<DBSongs>();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +48,7 @@ class _screencarlibraryState extends State<screencarlibrary> {
       key: scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
-        title: Text(widget.newkeys),
+        title: Text(newkeys),
       ),
       body: Column(
         // mainAxisAlignment: MainAxisAlignment.center,
@@ -96,7 +96,7 @@ class _screencarlibraryState extends State<screencarlibrary> {
                       valueListenable: getplaylistBox.listenable(),
                       builder: (BuildContext context, Box<List> value,
                           Widget? child) {
-                        final playlistkeyname = widget.newkeys;
+                        final playlistkeyname = newkeys;
                         final songlist = value
                             .get(playlistkeyname)!
                             .toList()
@@ -106,7 +106,8 @@ class _screencarlibraryState extends State<screencarlibrary> {
                             : ListView.builder(
                                 itemCount: songlist.length,
                                 itemBuilder: (context, index) {
-                                  return Musics(audioPlayer:widget.audioPlayer ,
+                                  return Musics(
+                                    audioPlayer: audioPlayer,
                                     index: index,
                                     item: songlist,
                                     iconwant: true,
@@ -119,7 +120,6 @@ class _screencarlibraryState extends State<screencarlibrary> {
                       })),
             ),
           ),
-         
         ],
       ),
     );

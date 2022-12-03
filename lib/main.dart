@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
+import 'package:music_player/applications/home/bloc/search_bloc.dart';
 
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
+import 'package:music_player/presentation/splash/screen_splashscreen.dart';
 
-import 'package:music_player/screeens/screen_splashscreen.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
 Future<void> main() async {
@@ -27,15 +30,25 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: AppBarTheme(
-          backgroundColor: darkblack,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => FavoritesBloc(),
         ),
-        scaffoldBackgroundColor: skyblack,
+        BlocProvider(
+          create: (context) => SearchBloc(),
+        )
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          appBarTheme: AppBarTheme(
+            backgroundColor: darkblack,
+          ),
+          scaffoldBackgroundColor: skyblack,
+        ),
+        home: const splashscreen(),
       ),
-      home: const splashscreen(),
     );
   }
 }

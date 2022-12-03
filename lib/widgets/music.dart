@@ -1,22 +1,25 @@
 import 'dart:developer';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
 
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/favorites.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
 import 'package:music_player/functions/playlist_rename.dart';
 import 'package:music_player/functions/playlists.dart';
+import 'package:music_player/presentation/library/screen%20_liabrary.dart';
+import 'package:music_player/presentation/home/screen_home.dart';
 
-import 'package:music_player/screeens/screen_home.dart';
-import 'package:music_player/screeens/screen_miniplayer.dart';
-import 'package:music_player/screeens/screen_favorites.dart';
-import 'package:music_player/screeens/screen%20_liabrary.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-class Musics extends StatefulWidget {
+import '../presentation/favorites/screen_favorites.dart';
+import '../presentation/mini_player/screen_miniplayer.dart';
+
+class Musics extends StatelessWidget {
   Musics({
     Key? key,
     required this.index,
@@ -35,37 +38,36 @@ class Musics extends StatefulWidget {
   final bool isithomepage;
   final String playlistname;
 
-  @override
-  State<Musics> createState() => _MusicsState();
-}
+//   @override
+//   State<Musics> createState() => _MusicsState();
+// }
 
-class _MusicsState extends State<Musics> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+// class _MusicsState extends State<Musics> {
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//   }
 
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return widget.isithomepage == true
+    return isithomepage == true
         ? ValueListenableBuilder(
             valueListenable: onPressedIndex,
             builder: (BuildContext context, int value, Widget? child) {
               return ListTile(
                 onTap: () {
-                  
                   newminiplayer(
-                      audioPlayer: widget.audioPlayer,
+                      audioPlayer: audioPlayer,
                       context: context,
-                      index: widget.index,
-                      item: widget.item);
+                      index: index,
+                      item: item);
                 },
                 contentPadding:
                     EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
                 title: Text(
-                  widget.item[widget.index].title,
+                  item[index].title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -74,9 +76,9 @@ class _MusicsState extends State<Musics> {
                       fontWeight: FontWeight.w500),
                 ),
                 subtitle: Text(
-                  widget.item[widget.index].artist == '<unknown>'
+                  item[index].artist == '<unknown>'
                       ? 'unknown'
-                      : widget.item[widget.index].artist,
+                      : item[index].artist,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -96,8 +98,8 @@ class _MusicsState extends State<Musics> {
                     //       Icons.play_arrow,
                     //       color: purewhite,
                     //     )),
-                    widget.iconwant == true
-                        ? widget.conditionalicon == true
+                    iconwant == true
+                        ? conditionalicon == true
                             ? PopupMenuButton(
                                 color: darkblack,
                                 icon: Icon(
@@ -105,39 +107,40 @@ class _MusicsState extends State<Musics> {
                                   color: white,
                                 ),
                                 itemBuilder: (context) => [
-                                      PopupMenuItem(
-                                          child: TextButton.icon(
+                                      PopupMenuItem(child: BlocBuilder<
+                                          FavoritesBloc, FavoritesState>(
+                                        builder: (context, state) {
+                                          return TextButton.icon(
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 favorites.AddingToFavorites(
                                                     context: context,
-                                                    id: widget
-                                                        .item[widget.index].id);
-                                                setState(() {
-                                                  favorites.isThisFavourite(
-                                                      id: widget
-                                                          .item[widget.index]
-                                                          .id);
-                                                });
+                                                    id: item[index].id);
+                                                BlocProvider.of<FavoritesBloc>(
+                                                        context)
+                                                    .add(const Favorite());
+
+                                                favorites.isThisFavourite(
+                                                    id: item[index].id);
                                               },
                                               icon: Icon(
                                                 favorites.isThisFavourite(
-                                                    id: widget
-                                                        .item[widget.index].id),
+                                                    id: item[index].id),
                                                 color: pink,
                                               ),
                                               label: Text(
                                                 'Favorite',
                                                 style: TextStyle(color: grey),
-                                              ))),
+                                              ));
+                                        },
+                                      )),
                                       PopupMenuItem(
                                           child: TextButton.icon(
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 PlaylistModelBottomSheet(
                                                     context: context,
-                                                    Song: widget
-                                                        .item[widget.index]);
+                                                    Song: item[index]);
                                               },
                                               icon: Icon(
                                                 Icons.playlist_add,
@@ -172,14 +175,12 @@ class _MusicsState extends State<Musics> {
                                                     Navigator.pop(context);
                                                     Playlists
                                                         .RemovingToPlaylist(
-                                                            playlistname: widget
-                                                                .playlistname,
-                                                            SongId: widget
-                                                                .item[widget
-                                                                    .index]
-                                                                .id,
+                                                            playlistname:
+                                                                playlistname,
+                                                            SongId:
+                                                                item[index].id,
                                                             context: context);
-                                                    log(widget.playlistname);
+                                                    log(playlistname);
                                                   },
                                                   child: Text('YES'))
                                             ],
@@ -198,24 +199,24 @@ class _MusicsState extends State<Musics> {
         //withoutHomepage
         : ListTile(
             onTap: (() {
-              setState(() {
-                newIndex.value = widget.index;
-                newIndex.notifyListeners();
-              });
+              //////////////////////////////
+              newIndex.value = index;
+              newIndex.notifyListeners();
+              ////////////////////////
             }),
             contentPadding:
                 EdgeInsets.symmetric(horizontal: screenWidth * 0.03),
             title: Text(
-              widget.item[widget.index].title,
+              item[index].title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
                   color: purewhite, fontSize: 16, fontWeight: FontWeight.w500),
             ),
             subtitle: Text(
-              widget.item[widget.index].artist == '<unknown>'
+              item[index].artist == '<unknown>'
                   ? 'unknown'
-                  : widget.item[widget.index].artist,
+                  : item[index].artist,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -232,21 +233,19 @@ class _MusicsState extends State<Musics> {
                         color: darkblack),
                     child: GestureDetector(
                       onTap: () {
-                        
                         newminiplayer(
                             context: context,
-                            item: widget.item,
-                            index: widget.index,
-                            audioPlayer: widget.audioPlayer);
+                            item: item,
+                            index: index,
+                            audioPlayer: audioPlayer);
                       },
                       child: Icon(
                         Icons.play_arrow,
                         color: purewhite,
                       ),
                     )),
-              
-                widget.iconwant == true
-                    ? widget.conditionalicon == true
+                iconwant == true
+                    ? conditionalicon == true
                         ? ValueListenableBuilder(
                             valueListenable: onPressedIndex,
                             builder: ((context, value, child) {
@@ -257,21 +256,22 @@ class _MusicsState extends State<Musics> {
                                     color: white,
                                   ),
                                   itemBuilder: (context) => [
-                                        PopupMenuItem(
-                                            child: TextButton.icon(
+                                        PopupMenuItem(child: BlocBuilder<
+                                            FavoritesBloc, FavoritesState>(
+                                          builder: (context, state) {
+                                            return TextButton.icon(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                   favorites.AddingToFavorites(
                                                       context: context,
-                                                      id: widget
-                                                          .item[widget.index]
-                                                          .id);
-                                                  setState(() {
-                                                    favorites.isThisFavourite(
-                                                        id: widget
-                                                            .item[widget.index]
-                                                            .id);
-                                                  });
+                                                      id: item[index].id);
+                                                  BlocProvider.of<
+                                                              FavoritesBloc>(
+                                                          context)
+                                                      .add(Favorite());
+
+                                                  favorites.isThisFavourite(
+                                                      id: item[index].id);
                                                 },
                                                 icon: ValueListenableBuilder(
                                                     valueListenable:
@@ -280,15 +280,15 @@ class _MusicsState extends State<Musics> {
                                                         child) {
                                                       return Icon(favorites
                                                           .isThisFavourite(
-                                                              id: widget
-                                                                  .item[widget
-                                                                      .index]
+                                                              id: item[index]
                                                                   .id));
                                                     }),
                                                 label: Text(
                                                   'Favorite',
                                                   style: TextStyle(color: grey),
-                                                ))),
+                                                ));
+                                          },
+                                        )),
                                         PopupMenuItem(
                                             child: TextButton.icon(
                                                 onPressed: () => Navigator.push(
@@ -296,9 +296,9 @@ class _MusicsState extends State<Musics> {
                                                     MaterialPageRoute(
                                                         builder: (context) =>
                                                             ScreenLibrary(
-                                                              audioPlayer: widget
-                                                                  .audioPlayer,
-                                                              item: widget.item,
+                                                              audioPlayer:
+                                                                  audioPlayer,
+                                                              item: item,
                                                             ))),
                                                 icon: Icon(
                                                   Icons.playlist_add,
@@ -328,10 +328,8 @@ class _MusicsState extends State<Musics> {
                                               onPressed: () {
                                                 Navigator.pop(context);
                                                 Playlists.RemovingToPlaylist(
-                                                    playlistname:
-                                                        widget.playlistname,
-                                                    SongId: widget
-                                                        .item[widget.index].id,
+                                                    playlistname: playlistname,
+                                                    SongId: item[index].id,
                                                     context: context);
                                               },
                                               child: Text('YES'))

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../shortcuts/shortcuts.dart';
+import '../../shortcuts/shortcuts.dart';
 
 class userscreen extends StatefulWidget {
   userscreen({Key? key}) : super(key: key);

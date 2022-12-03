@@ -4,8 +4,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
-class drewbaritems1 extends StatefulWidget {
-  const drewbaritems1(
+class drewbaritems1 extends StatelessWidget {
+   drewbaritems1(
       {Key? key,
       required this.text,
       required this.message,
@@ -15,11 +15,11 @@ class drewbaritems1 extends StatefulWidget {
   final String message;
   final Color notibackclr;
 
-  @override
-  State<drewbaritems1> createState() => _drewbaritems1State();
-}
+//   @override
+//   State<drewbaritems1> createState() => _drewbaritems1State();
+// }
 
-class _drewbaritems1State extends State<drewbaritems1> {
+// class _drewbaritems1State extends State<drewbaritems1> {
   bool mySwitch = true;
   @override
   Widget build(
@@ -39,7 +39,7 @@ class _drewbaritems1State extends State<drewbaritems1> {
         Padding(
           padding: EdgeInsets.only(
               left: screenHeight * 0.030, top: screenHeight * 0.011),
-          child: Text(widget.text,
+          child: Text(text,
               style: TextStyle(
                   fontSize: 15, color: grey, fontWeight: FontWeight.w500)),
         ),
@@ -50,11 +50,11 @@ class _drewbaritems1State extends State<drewbaritems1> {
               activeColor: purewhite,
               value: mySwitch,
               onChanged: ((bool value) {
-                setState(() {
+                /////////////////////
                   mySwitch = value;
-                });
-                notisnackbar(
-                    message: widget.message, notibackclr: widget.notibackclr);
+               ///////////////////
+                notisnackbar(context: context,
+                    message: message, notibackclr: notibackclr);
                 Navigator.pop(context);
               })),
         )
@@ -62,7 +62,7 @@ class _drewbaritems1State extends State<drewbaritems1> {
     );
   }
 
-  notisnackbar({required String message, required Color notibackclr}) {
+  notisnackbar({required String message, required Color notibackclr, required BuildContext context}) {
     return ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(

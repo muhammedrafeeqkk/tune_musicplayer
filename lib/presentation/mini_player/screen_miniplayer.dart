@@ -1,16 +1,20 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/favorites.dart';
 import 'package:music_player/functions/just_audioplayer.dart';
 import 'package:music_player/functions/recent.dart';
-import 'package:music_player/screeens/screen__nowplaying.dart';
+
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
+import '../now_playing/screen_nowplaying.dart';
+
 List<Audio> songAudioList = [];
 
-class MiniPlayer extends StatefulWidget {
+class MiniPlayer extends StatelessWidget {
   const MiniPlayer(
       {Key? key,
       required this.audioPlayer,
@@ -21,17 +25,17 @@ class MiniPlayer extends StatefulWidget {
   final AssetsAudioPlayer audioPlayer;
   final List<DBSongs> songList;
   final int index;
-  @override
-  State<MiniPlayer> createState() => _MiniPlayerState();
-}
+//   @override
+//   State<MiniPlayer> createState() => _MiniPlayerState();
+// }
 
-class _MiniPlayerState extends State<MiniPlayer> {
+// class _MiniPlayerState extends State<MiniPlayer> {
   Audio find(List<Audio> source, String fromPath) {
     return source.firstWhere((element) => element.path == fromPath);
   }
 
   convertDbSongToAudio() {
-    for (var song in widget.songList) {
+    for (var song in songList) {
       Audio audio = Audio.file(song.uri,
           metas: Metas(title: song.title, artist: song.artist, id: song.id));
       songAudioList.add(audio);
@@ -39,28 +43,27 @@ class _MiniPlayerState extends State<MiniPlayer> {
   }
 
   playAudioSong() {
-    widget.audioPlayer.open(
+    audioPlayer.open(
       Playlist(
         audios: songAudioList,
-        startIndex: widget.index,
+        startIndex: index,
       ),
       showNotification: true,
       autoStart: true,
     );
   }
 
-  @override
   void initState() {
     convertDbSongToAudio();
     playAudioSong();
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    return widget.audioPlayer.builderCurrent(
+    return audioPlayer.builderCurrent(
       builder: (context, playing) {
         final myAudio = find(songAudioList, playing.audio.assetAudioPath);
         recent.addingSonginRecent(SongId: myAudio.metas.id!);
@@ -78,8 +81,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return Screennowplaying(
                   item: songAudioList,
-                  audioPlayer: widget.audioPlayer,
-                  index: widget.index,
+                  audioPlayer: audioPlayer,
+                  index: index,
                 );
               }));
             },
@@ -106,7 +109,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ),
             title: Container(
               child: Text(
-                widget.audioPlayer.getCurrentAudioTitle,
+                audioPlayer.getCurrentAudioTitle,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -117,7 +120,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
             ),
             subtitle: Container(
               child: Text(
-                widget.audioPlayer.getCurrentAudioArtist,
+                audioPlayer.getCurrentAudioArtist=='<unknown>'?'unknown':audioPlayer.getCurrentAudioArtist,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
@@ -128,44 +131,42 @@ class _MiniPlayerState extends State<MiniPlayer> {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  IconButton(
-                      onPressed: () {
-                        setState(() {
-                          favorites.AddingToFavorites(
-                              context: context,
-                              id: songAudioList[widget.index].metas.id!);
-                          setState(() {
+                  BlocBuilder<FavoritesBloc, FavoritesState>(
+                    builder: (context, state) {
+                      return IconButton(
+                          onPressed: () {
+                            favorites.AddingToFavorites(
+                                context: context,
+                                id: songAudioList[index].metas.id!);
+
                             favorites.isThisFavourite(
-                                id: songAudioList[widget.index].metas.id!);
-                          });
-                        });
-                      },
-                      icon: Icon(
-                        favorites.isThisFavourite(
-                            id: songAudioList[widget.index].metas.id!),
-                        size: 24,
-                        color: pink,
-                      )),
+                                id: songAudioList[index].metas.id!);
+                             BlocProvider.of<FavoritesBloc>(context).add( const Favorite());
+                          },
+                          icon: Icon(
+                            favorites.isThisFavourite(
+                                id: songAudioList[index].metas.id!),
+                            size: 24,
+                            color: pink,
+                          ));
+                    },
+                  ),
                   IconButton(
                       onPressed: () {
-                        setState(() {
-                          assetAudioplayineTools.previousplay(
-                              audioPlayer: widget.audioPlayer);
-                        });
+                        assetAudioplayineTools.previousplay(
+                            audioPlayer: audioPlayer);
                       },
                       icon: Icon(
                         Icons.skip_previous,
                         color: grey,
                       )),
                   PlayerBuilder.isPlaying(
-                      player: widget.audioPlayer,
+                      player: audioPlayer,
                       builder: (context, isPlaying) {
                         return IconButton(
                           onPressed: () {
-                            setState(() {
-                              assetAudioplayineTools.playbutton(
-                                  audioPlayer: widget.audioPlayer);
-                            });
+                            assetAudioplayineTools.playbutton(
+                                audioPlayer: audioPlayer);
                           },
                           icon: isPlaying
                               ? Icon(Icons.pause_circle_outline_outlined)
@@ -175,10 +176,8 @@ class _MiniPlayerState extends State<MiniPlayer> {
                       }),
                   IconButton(
                       onPressed: () {
-                        setState(() {
-                          assetAudioplayineTools.nextplay(
-                              audioPlayer: widget.audioPlayer);
-                        });
+                        assetAudioplayineTools.nextplay(
+                            audioPlayer: audioPlayer);
                       },
                       icon: Icon(
                         Icons.skip_next,

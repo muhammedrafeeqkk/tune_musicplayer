@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
 // ignore: camel_case_types
-class shortcutwidgets extends StatefulWidget {
-  const shortcutwidgets({
+class shortcutwidgets extends StatelessWidget {
+   shortcutwidgets({
     Key? key,
     required this.imageurl,
     required this.text,
@@ -13,11 +13,11 @@ class shortcutwidgets extends StatefulWidget {
   final String imageurl;
   final String text;
 
-  @override
-  State<shortcutwidgets> createState() => _shortcutwidgetsState();
-}
+//   @override
+//   State<shortcutwidgets> createState() => _shortcutwidgetsState();
+// }
 
-class _shortcutwidgetsState extends State<shortcutwidgets> {
+// class _shortcutwidgetsState extends State<shortcutwidgets> {
   bool _isnotfavorite = true;
   @override
   Widget build(BuildContext context) {
@@ -36,7 +36,7 @@ class _shortcutwidgetsState extends State<shortcutwidgets> {
 
               borderRadius: BorderRadius.circular(10),
               image: DecorationImage(
-                  image: AssetImage(widget.imageurl), fit: BoxFit.cover)),
+                  image: AssetImage( imageurl), fit: BoxFit.cover)),
           height: screenHeight * 0.40,
           width: screenWidth * 0.33,
         ),
@@ -44,7 +44,7 @@ class _shortcutwidgetsState extends State<shortcutwidgets> {
           bottom: 10,
           left: 10,
           child: Text(
-            widget.text,
+             text,
             style: TextStyle(
                 color: grey, fontSize: 18, fontWeight: FontWeight.w600),
           ),

@@ -2,8 +2,9 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:music_player/screeens/screen_licenses.dart';
-import 'package:music_player/screeens/screen_privacy.dart';
+import 'package:music_player/presentation/licence/screen_licenses.dart';
+import 'package:music_player/presentation/privacy/screen_privacy.dart';
+
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/drewbaritems.dart';
 import 'package:share_plus/share_plus.dart';

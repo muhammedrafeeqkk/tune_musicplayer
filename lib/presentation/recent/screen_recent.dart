@@ -7,29 +7,27 @@ import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/homepagewidgets.dart';
 import 'package:music_player/widgets/music.dart';
 
-class ScreenRecent extends StatefulWidget {
+class ScreenRecent extends StatelessWidget {
   ScreenRecent({Key? key, required this.audioplayer}) : super(key: key);
 
   final AssetsAudioPlayer audioplayer;
-  @override
-  State<ScreenRecent> createState() => _ScreenRecentState();
-}
+//   @override
+//   State<ScreenRecent> createState() => _ScreenRecentState();
+// }
 
-class _ScreenRecentState extends State<ScreenRecent> {
-  List<DBSongs> Songlist = [];
+// class _ScreenRecentState extends State<ScreenRecent> {
+  List<DBSongs> recentSonglist = [];
 
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   final Box<List> getlistsongsbox = get_adding_lists();
 
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    Songlist = getlistsongsbox.get('recent')!.toList().cast<DBSongs>();
+  initState() {
+    recentSonglist = getlistsongsbox.get('recent')!.toList().cast<DBSongs>();
   }
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -92,18 +90,18 @@ class _ScreenRecentState extends State<ScreenRecent> {
                 child: ValueListenableBuilder(
                   valueListenable: getlistsongsbox.listenable(),
                   builder: (context, value, child) {
-                    return Songlist.isEmpty
+                    return recentSonglist.isEmpty
                         ? Center(child: Text('NO SONGS'))
                         : ListView.builder(
-                            itemCount: Songlist.length,
+                            itemCount: recentSonglist.length,
                             itemBuilder: (context, index) {
                               return Musics(
                                 index: index,
-                                item: Songlist,
+                                item: recentSonglist,
                                 iconwant: true,
                                 isithomepage: true,
                                 playlistname: 'recent',
-                                audioPlayer: widget.audioplayer,
+                                audioPlayer: audioplayer,
                                 conditionalicon: true,
                               );
                             },

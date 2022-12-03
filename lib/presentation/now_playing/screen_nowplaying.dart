@@ -1,5 +1,7 @@
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
@@ -10,8 +12,8 @@ import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-class Screennowplaying extends StatefulWidget {
-  const Screennowplaying({
+class Screennowplaying extends StatelessWidget {
+  Screennowplaying({
     Key? key,
     required this.item,
     required this.audioPlayer,
@@ -21,11 +23,11 @@ class Screennowplaying extends StatefulWidget {
   final AssetsAudioPlayer audioPlayer;
   final int index;
 
-  @override
-  State<Screennowplaying> createState() => _ScreennowplayingState();
-}
+//   @override
+//   State<Screennowplaying> createState() => _ScreennowplayingState();
+// }
 
-class _ScreennowplayingState extends State<Screennowplaying> {
+// class _ScreennowplayingState extends State<Screennowplaying> {
   Audio find(List<Audio> source, String fromPath) {
     return source.firstWhere((element) => element.path == fromPath);
   }
@@ -35,39 +37,34 @@ class _ScreennowplayingState extends State<Screennowplaying> {
 
   bool _isnotfavorite = true;
 
-  @override
-  void initState() {
-    super.initState();
+  initState() {
     songList = get_allsongsbox().values.toList().cast<DBSongs>();
-    //Playsong(widget.Uri);
   }
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final screenwidth = MediaQuery.of(context).size.width;
     final screenHeight = MediaQuery.of(context).size.height;
 
-    // final   AudioPlayer  justAudio =AudioPlayer.withId('0');
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_outlined),
           onPressed: () {
             Navigator.pop(context);
-            // log(audioPlayer.sequenceState.currentIndex);
-            // Navigator.pop(context, audioPlayer.currentIndex);
           },
         ),
         centerTitle: true,
-        title: Text('Now Playing'),
+        title: const Text('Now Playing'),
       ),
       body: Column(
         children: [
           SizedBox(
             height: screenHeight * 0.04,
           ),
-          widget.audioPlayer.builderCurrent(builder: (context, playing) {
-            final myAudio = find(widget.item, playing.audio.assetAudioPath);
+          audioPlayer.builderCurrent(builder: (context, playing) {
+            final myAudio = find(item, playing.audio.assetAudioPath);
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -101,49 +98,53 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                   children: [
                     IconButton(
                         onPressed: () => PlaylistModelBottomSheet(
-                            Song: songList[widget.index], context: context),
+                            Song: songList[index], context: context),
                         icon: Icon(
                           Icons.playlist_add_outlined,
                           size: 40,
                           color: grey,
                         )),
-                    IconButton(
-                        onPressed: (() {
-                          favorites.AddingToFavorites(
-                              context: context, id: myAudio.metas.id!);
-                          setState(() {
-                            favorites.isThisFavourite(id: myAudio.metas.id!);
-                            // _isnotfavorite = !_isnotfavorite;
-                          });
-                        }),
-                        icon: Icon(
-                          favorites.isThisFavourite(id: myAudio.metas.id!),
-                          size: 30,
-                          color: pink,
-                        )),
-                    IconButton(
-                        onPressed: (() {
-                          setState(() {
-                            assetAudioplayineTools.shufflesong(
-                                audioPlayer: widget.audioPlayer);
-                          });
-                        }),
-                        icon: widget.audioPlayer.shuffle
-                            ? Icon(Icons.shuffle, size: 30, color: grey
-                                // color: pink,
-                                )
-                            : Icon(
-                                Icons.shuffle,
-                                size: 30,
-                                color: pink,
-                              )),
+                    BlocBuilder<FavoritesBloc, FavoritesState>(
+                      builder: (context, state) {
+                        return IconButton(
+                            onPressed: (() {
+                              favorites.AddingToFavorites(
+                                  context: context, id: myAudio.metas.id!);
+                              BlocProvider.of<FavoritesBloc>(context)
+                                  .add(const Favorite());
+
+                              favorites.isThisFavourite(id: myAudio.metas.id!);
+                            }),
+                            icon: Icon(
+                              favorites.isThisFavourite(id: myAudio.metas.id!),
+                              size: 30,
+                              color: pink,
+                            ));
+                      },
+                    ),
+                    // IconButton(
+                    //     onPressed: (() {
+                    //       setState(() {
+                    //         assetAudioplayineTools.shufflesong(
+                    //             audioPlayer: widget.audioPlayer);
+                    //       });
+                    //     }),
+                    //     icon: widget.audioPlayer.shuffle
+                    //         ? Icon(Icons.shuffle, size: 30, color: grey
+                    //             // color: pink,
+                    //             )
+                    //         : Icon(
+                    //             Icons.shuffle,
+                    //             size: 30,
+                    //             color: pink,
+                    //           )),
                   ],
                 )
               ],
             );
           }),
-          widget.audioPlayer.builderCurrent(builder: (context, Playing) {
-            final myAudio = find(widget.item, Playing.audio.assetAudioPath);
+          audioPlayer.builderCurrent(builder: (context, Playing) {
+            final myAudio = find(item, Playing.audio.assetAudioPath);
 
             return Column(
               children: [
@@ -186,7 +187,7 @@ class _ScreennowplayingState extends State<Screennowplaying> {
           SizedBox(
             height: screenHeight * 0.09,
           ),
-          widget.audioPlayer.builderRealtimePlayingInfos(
+          audioPlayer.builderRealtimePlayingInfos(
               builder: (context, realTimeInfos) {
             final current = realTimeInfos.currentPosition;
             final duration = realTimeInfos.duration;
@@ -199,10 +200,10 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                     value: current.inSeconds.toDouble(),
                     max: duration.inSeconds.toDouble(),
                     onChanged: ((value) {
-                      setState(() {
-                        changeToSeconds(value.toInt());
-                        value = value;
-                      });
+                      // setState(() {
+                      changeToSeconds(value.toInt());
+                      value = value;
+                      // });
                     }),
                     activeColor: pink,
                     inactiveColor: grey,
@@ -218,12 +219,8 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                         current.toString().split('.')[0],
                         style: TextStyle(color: grey),
                       ),
-                      // "${_position.inHours}:${_position.inMinutes.remainder(60)}:${(_position.inSeconds.remainder(60))}"),
-                      // '${_position.toString().split("0")[0]}'),
                       Text(
                         duration.toString().split('.')[0],
-                        // "${_duration.inMinutes.remainder(60)}:${(_duration.inSeconds.remainder(60))}",
-                        // '${_duration.toString().split("0")[0]}',
                         style: TextStyle(color: grey),
                       )
                     ],
@@ -247,10 +244,9 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                       backgroundColor: darkblack,
                       child: IconButton(
                           onPressed: () {
-                            setState(() {
-                              assetAudioplayineTools.previousplay(
-                                  audioPlayer: widget.audioPlayer);
-                            });
+                            assetAudioplayineTools.previousplay(
+                                audioPlayer: audioPlayer);
+
                             // if (audioPlayer.hasPrevious) {
                             //   audioPlayer.seekToPrevious();
                             // }
@@ -268,14 +264,12 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                         padding: EdgeInsets.only(right: 2),
                         child: Container(
                           child: PlayerBuilder.isPlaying(
-                              player: widget.audioPlayer,
+                              player: audioPlayer,
                               builder: (context, isPlaying) {
                                 return IconButton(
                                   onPressed: () {
-                                    setState(() {
-                                      assetAudioplayineTools.playbutton(
-                                          audioPlayer: widget.audioPlayer);
-                                    });
+                                    assetAudioplayineTools.playbutton(
+                                        audioPlayer: audioPlayer);
                                   },
                                   icon: Icon(
                                     isPlaying ? Icons.pause : Icons.play_arrow,
@@ -291,10 +285,9 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                       backgroundColor: darkblack,
                       child: IconButton(
                           onPressed: () {
-                            setState(() {
-                              assetAudioplayineTools.nextplay(
-                                  audioPlayer: widget.audioPlayer);
-                            });
+                            assetAudioplayineTools.nextplay(
+                                audioPlayer: audioPlayer);
+
                             // if (audioPlayer.hasNext) {
                             //   audioPlayer.seekToNext();
                             // }
@@ -310,8 +303,8 @@ class _ScreennowplayingState extends State<Screennowplaying> {
               ),
             ],
           ),
-          widget.audioPlayer.builderCurrent(builder: (context, Playing) {
-            final myAudio = find(widget.item, Playing.audio.assetAudioPath);
+          audioPlayer.builderCurrent(builder: (context, Playing) {
+            final myAudio = find(item, Playing.audio.assetAudioPath);
             int currentSongIndex = upcommingsongindex(songId: myAudio.metas.id);
 
             return Column(
@@ -333,7 +326,7 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                   width: screenwidth * 0.8,
                   child: Center(
                     child: Text(
-                      widget.item[currentSongIndex + 1].metas.title!,
+                      item[currentSongIndex + 1].metas.title!,
                       // _isshuffled
                       //     ? widget.item[currentSongIndex+1].metas.title!
                       //     : 'Shuffled',
@@ -352,10 +345,9 @@ class _ScreennowplayingState extends State<Screennowplaying> {
                     width: screenwidth * 0.45,
                     child: Center(
                       child: Text(
-                        widget.item[currentSongIndex + 1].metas.artist ==
-                                '<unknown>'
+                        item[currentSongIndex + 1].metas.artist == '<unknown>'
                             ? 'unknown'
-                            : widget.item[currentSongIndex + 1].metas.artist!,
+                            : item[currentSongIndex + 1].metas.artist!,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -377,7 +369,7 @@ class _ScreennowplayingState extends State<Screennowplaying> {
   void changeToSeconds(int seconds) {
     Duration duration = Duration(seconds: seconds);
     // Widget.audioPlayer.seek(Duration())
-    widget.audioPlayer.seek(duration);
+    audioPlayer.seek(duration);
   }
 
   upcommingsongindex({required songId}) {

@@ -5,19 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
-import 'package:music_player/screeens/screen_favorites.dart';
-
-import 'package:music_player/screeens/screen_insideLibrary.dart';
-import 'package:music_player/screeens/screen_miniplayer.dart';
+import 'package:music_player/presentation/inside_library/screen_insideLibrary.dart';
 
 import 'package:music_player/shortcuts/shortcuts.dart';
 import 'package:music_player/widgets/music.dart';
 
 import 'package:music_player/widgets/new_create_playlist_show_dailouge.dart';
 
-import '../widgets/customgrid.dart';
+import '../../widgets/customgrid.dart';
 
-class ScreenLibrary extends StatefulWidget {
+class ScreenLibrary extends StatelessWidget {
   ScreenLibrary({
     Key? key,
     required this.item,
@@ -27,33 +24,33 @@ class ScreenLibrary extends StatefulWidget {
   final List<DBSongs> item;
   final AssetsAudioPlayer audioPlayer;
 
-  @override
-  State<ScreenLibrary> createState() => _ScreenLibraryState();
-}
+//   @override
+//   State<ScreenLibrary> createState() => _ScreenLibraryState();
+// }
 
-class _ScreenLibraryState extends State<ScreenLibrary> {
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
+// class _ScreenLibraryState extends State<ScreenLibrary> {
+//   @override
+//   void initState() {
+//     // TODO: implement initState
+//     super.initState();
+//   }
 
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     Box<List> getplaylistBox = get_adding_lists();
     ////////////////////////////////////
-    final songId = widget.audioPlayer.id;
+    final songId = audioPlayer.id;
     final currentindex = currentsongindex(songId: songId);
 
     PlayerBuilder.isPlaying(
-      player: widget.audioPlayer,
+      player: audioPlayer,
       builder: (context, isPlaying) {
         return newminiplayer(
             context: context,
-            item: widget.item,
+            item: item,
             index: currentindex,
-            audioPlayer: widget.audioPlayer);
+            audioPlayer: audioPlayer);
       },
     );
     //////////////////////////
@@ -111,8 +108,7 @@ class _ScreenLibraryState extends State<ScreenLibrary> {
                                             MaterialPageRoute(
                                               builder: (context) =>
                                                   screencarlibrary(
-                                                      audioPlayer:
-                                                          widget.audioPlayer,
+                                                      audioPlayer: audioPlayer,
                                                       index: index,
                                                       newkeys: playlistkeyname),
                                             ));
@@ -138,8 +134,7 @@ class _ScreenLibraryState extends State<ScreenLibrary> {
   }
 
   currentsongindex({required songId}) {
-    final currentIndex =
-        widget.item.indexWhere((element) => element.id == songId);
+    final currentIndex = item.indexWhere((element) => element.id == songId);
     return currentIndex;
   }
 }

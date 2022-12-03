@@ -1,28 +1,29 @@
+import 'dart:js';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
-import 'package:music_player/screeens/screen_home.dart';
+import 'package:music_player/presentation/home/screen_home.dart';
 
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class splashscreen extends StatefulWidget {
-  const splashscreen({Key? key}) : super(key: key);
+class splashscreen extends StatelessWidget {
+  splashscreen({Key? key}) : super(key: key);
 
-  @override
-  State<splashscreen> createState() => _splashscreenState();
-}
+//   @override
+//   State<splashscreen> createState() => _splashscreenState();
+// }
 
-class _splashscreenState extends State<splashscreen> {
+// class _splashscreenState extends State<splashscreen> {
   final OnAudioQuery _onAudioQuery = OnAudioQuery();
   List<SongModel> deviceAllSongs = [];
   Box<DBSongs> allsongbox = get_allsongsbox();
   Box<List> adding_lists = get_adding_lists();
 
-  @override
-  void initState() {
-    super.initState();
+  initState() {
+    // super.initState();
 
     allDevicesong();
   }
@@ -48,7 +49,7 @@ class _splashscreenState extends State<splashscreen> {
     }
     Getfavsongs();
     GetRecentSongs();
-    _navigatetohome();
+    _navigatetohome(context);
   }
 
   Future Getfavsongs() async {
@@ -63,15 +64,17 @@ class _splashscreenState extends State<splashscreen> {
     }
   }
 
-  _navigatetohome() async {
+  _navigatetohome(context) async {
     await Future.delayed(const Duration(seconds: 4));
     () {};
     Navigator.pushReplacement(
-        context, MaterialPageRoute(builder: (ctx) => const myhome()));
+        context, MaterialPageRoute(builder: (ctx) => myhome()));
   }
 
   @override
   Widget build(BuildContext context) {
+    initState();
+
     return const Scaffold(
       body: Center(
           child: Image(

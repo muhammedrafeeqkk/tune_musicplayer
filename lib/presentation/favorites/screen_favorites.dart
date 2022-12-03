@@ -2,47 +2,45 @@ import 'dart:developer';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
 
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/favorites.dart';
-import 'package:music_player/screeens/screen_home.dart';
 
-import 'package:music_player/screeens/screen%20_liabrary.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
 
 import 'package:music_player/widgets/music.dart';
 import 'package:music_player/widgets/playlistshowmodelsheet.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 
-import '../widgets/homepagewidgets.dart';
+import '../../widgets/homepagewidgets.dart';
 
 ValueNotifier<int> newIndex = ValueNotifier(0);
 
-class ScreenFavorites extends StatefulWidget {
+class ScreenFavorites extends StatelessWidget {
   ScreenFavorites({Key? key, required this.audioPlayer}) : super(key: key);
   final AssetsAudioPlayer audioPlayer;
 
-  @override
-  State<ScreenFavorites> createState() => _ScreenFavoritesState();
-}
+//   @override
+//   State<ScreenFavorites> createState() => _ScreenFavoritesState();
+// }
 
-class _ScreenFavoritesState extends State<ScreenFavorites> {
+// class _ScreenFavoritesState extends State<ScreenFavorites> {
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
   List<DBSongs> Songlist = [];
 
   final Box<List> getlistsongs = get_adding_lists();
 
-  @override
   void initState() {
-    // TODO: implement initState
-    super.initState();
     Songlist = getlistsongs.get('favorites')!.toList().cast<DBSongs>();
   }
 
   @override
   Widget build(BuildContext context) {
+    initState();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -64,27 +62,34 @@ class _ScreenFavoritesState extends State<ScreenFavorites> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        IconButton(
-                          onPressed: () {
-                            favorites.AddingToFavorites(
-                                context: context, id: Songlist[favValue].id);
-                            setState(() {
-                              favorites.isThisFavourite(
-                                  id: Songlist[favValue].id);
-                            });
+                        BlocBuilder<FavoritesBloc, FavoritesState>(
+                          builder: (context, state) {
+                            return IconButton(
+                              
+                              onPressed: () {
+                                favorites.AddingToFavorites(
+                                    context: context,
+                                    id: Songlist[favValue].id);
+                                BlocProvider.of<FavoritesBloc>(context)
+                                    .add(Favorite());
+                                favorites.isThisFavourite(
+                                    id: Songlist[favValue].id);
+                              },
+                              icon: Songlist.isEmpty
+                                  ? Center(
+                                      child: Icon(Icons.hourglass_empty_rounded,
+                                          color: grey, size: 30),
+                                    )
+                                  : Center(
+                                      child: Icon(
+
+                                          favorites.isThisFavourite(
+                                              id: Songlist[favValue].id),
+                                          color: pink,
+                                          size: 30),
+                                    ),
+                            );
                           },
-                          icon: Songlist.isEmpty
-                              ? Center(
-                                  child: Icon(Icons.hourglass_empty_rounded,
-                                      color: grey, size: 30),
-                                )
-                              : Center(
-                                  child: Icon(
-                                      favorites.isThisFavourite(
-                                          id: Songlist[favValue].id),
-                                      color: pink,
-                                      size: 30),
-                                ),
                         ),
                         Songlist.isEmpty
                             ? Padding(
@@ -104,6 +109,7 @@ class _ScreenFavoritesState extends State<ScreenFavorites> {
                                         borderRadius:
                                             BorderRadius.circular(25)),
                                     child: Icon(
+                                      
                                       Icons.music_note,
                                       size: 55,
                                     ),
@@ -192,7 +198,9 @@ class _ScreenFavoritesState extends State<ScreenFavorites> {
                         borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(20),
                             topRight: Radius.circular(20))),
+                    ////////////////////////////////////
                     child: ValueListenableBuilder(
+                        ////////////////////////////////////////
                         valueListenable: getlistsongs.listenable(),
                         builder: (BuildContext context, Box<List> value,
                             Widget? child) {
@@ -207,7 +215,7 @@ class _ScreenFavoritesState extends State<ScreenFavorites> {
                                   itemBuilder: (context, index) {
                                     return GestureDetector(
                                       child: Musics(
-                                        audioPlayer: widget.audioPlayer,
+                                        audioPlayer: audioPlayer,
                                         index: index,
                                         item: Songlist,
                                         iconwant: false,
