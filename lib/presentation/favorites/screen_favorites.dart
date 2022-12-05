@@ -34,13 +34,10 @@ class ScreenFavorites extends StatelessWidget {
 
   final Box<List> getlistsongs = get_adding_lists();
 
-  void initState() {
-    Songlist = getlistsongs.get('favorites')!.toList().cast<DBSongs>();
-  }
+  // Songlist = getlistsongs.get('favorites')!.toList().cast<DBSongs>();
 
   @override
   Widget build(BuildContext context) {
-    initState();
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
@@ -65,7 +62,6 @@ class ScreenFavorites extends StatelessWidget {
                         BlocBuilder<FavoritesBloc, FavoritesState>(
                           builder: (context, state) {
                             return IconButton(
-                              
                               onPressed: () {
                                 favorites.AddingToFavorites(
                                     context: context,
@@ -82,7 +78,6 @@ class ScreenFavorites extends StatelessWidget {
                                     )
                                   : Center(
                                       child: Icon(
-
                                           favorites.isThisFavourite(
                                               id: Songlist[favValue].id),
                                           color: pink,
@@ -109,7 +104,6 @@ class ScreenFavorites extends StatelessWidget {
                                         borderRadius:
                                             BorderRadius.circular(25)),
                                     child: Icon(
-                                      
                                       Icons.music_note,
                                       size: 55,
                                     ),
@@ -187,53 +181,47 @@ class ScreenFavorites extends StatelessWidget {
           allsongs(context),
           Expanded(
               flex: 10,
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                    horizontal: screenWidth * 0.01,
-                    vertical: screenWidth * 0.01),
-                child: Container(
-                    height: double.infinity,
-                    decoration: BoxDecoration(
-                        color: liteblack,
-                        borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20))),
-                    ////////////////////////////////////
-                    child: ValueListenableBuilder(
-                        ////////////////////////////////////////
-                        valueListenable: getlistsongs.listenable(),
-                        builder: (BuildContext context, Box<List> value,
-                            Widget? child) {
-                          Songlist = getlistsongs
-                              .get('favorites')!
-                              .toList()
-                              .cast<DBSongs>();
-                          return (Songlist.isEmpty)
-                              ? Center(child: const Text('No Songs'))
-                              : ListView.builder(
-                                  itemCount: Songlist.length,
-                                  itemBuilder: (context, index) {
-                                    return GestureDetector(
-                                      child: Musics(
-                                        audioPlayer: audioPlayer,
-                                        index: index,
-                                        item: Songlist,
-                                        iconwant: false,
-                                        isithomepage: false,
-                                        conditionalicon: false,
-                                        playlistname: 'favorites',
-                                      ),
-                                    );
-                                  });
-                        })
+              child: BlocBuilder<FavoritesBloc, FavoritesState>(
+                builder: (context, state) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: screenWidth * 0.01,
+                        vertical: screenWidth * 0.01),
+                    child: Container(
+                        height: double.infinity,
+                        decoration: BoxDecoration(
+                            color: liteblack,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(20),
+                                topRight: Radius.circular(20))),
+                        ////////////////////////////////////
+                        child: (state.favoriteSongList.isEmpty)
+                            ? Center(child: const Text('No Songs'))
+                            : ListView.builder(
+                                itemCount: state.favoriteSongList.length,
+                                itemBuilder: (context, index) {
+                                  return GestureDetector(
+                                    child: Musics(
+                                      audioPlayer: audioPlayer,
+                                      index: index,
+                                      item: state.favoriteSongList,
+                                      iconwant: false,
+                                      isithomepage: false,
+                                      conditionalicon: false,
+                                      playlistname: 'favorites',
+                                    ),
+                                  );
+                                })
 
-                    //  ListView.builder(
-                    //   itemCount: 1,
-                    //   itemBuilder: (context, index) {
-                    //     return Text('no songs');
-                    //   },
-                    // )
-                    ),
+                        //  ListView.builder(
+                        //   itemCount: 1,
+                        //   itemBuilder: (context, index) {
+                        //     return Text('no songs');
+                        //   },
+                        // )
+                        ),
+                  );
+                },
               )),
         ],
       ),

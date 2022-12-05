@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:hive_flutter/adapters.dart';
-import 'package:music_player/applications/home/bloc/search_bloc.dart';
+
+import 'package:music_player/applications/home/search/search_bloc.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 

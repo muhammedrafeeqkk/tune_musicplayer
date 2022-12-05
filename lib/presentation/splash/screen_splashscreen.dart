@@ -1,5 +1,3 @@
-import 'dart:js';
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
@@ -9,14 +7,14 @@ import 'package:music_player/presentation/home/screen_home.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class splashscreen extends StatelessWidget {
+class splashscreen extends StatefulWidget {
   splashscreen({Key? key}) : super(key: key);
 
-//   @override
-//   State<splashscreen> createState() => _splashscreenState();
-// }
+  @override
+  State<splashscreen> createState() => _splashscreenState();
+}
 
-// class _splashscreenState extends State<splashscreen> {
+class _splashscreenState extends State<splashscreen> {
   final OnAudioQuery _onAudioQuery = OnAudioQuery();
   List<SongModel> deviceAllSongs = [];
   Box<DBSongs> allsongbox = get_allsongsbox();
@@ -49,7 +47,7 @@ class splashscreen extends StatelessWidget {
     }
     Getfavsongs();
     GetRecentSongs();
-    _navigatetohome(context);
+    _navigatetohome();
   }
 
   Future Getfavsongs() async {
@@ -64,8 +62,8 @@ class splashscreen extends StatelessWidget {
     }
   }
 
-  _navigatetohome(context) async {
-    await Future.delayed(const Duration(seconds: 4));
+  _navigatetohome() async {
+    await Future.delayed(const Duration(seconds: 2));
     () {};
     Navigator.pushReplacement(
         context, MaterialPageRoute(builder: (ctx) => myhome()));

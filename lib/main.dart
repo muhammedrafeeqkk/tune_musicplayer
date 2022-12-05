@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
-import 'package:music_player/applications/home/bloc/search_bloc.dart';
+
+import 'package:music_player/applications/home/search/search_bloc.dart';
+import 'package:music_player/applications/recent/recent_bloc.dart';
 
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/presentation/splash/screen_splashscreen.dart';
@@ -37,6 +39,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => SearchBloc(),
+        ),
+        BlocProvider(
+          create: (context) => RecentBloc(),
+          child: Container(),
         )
       ],
       child: MaterialApp(
@@ -47,7 +53,7 @@ class MyApp extends StatelessWidget {
           ),
           scaffoldBackgroundColor: skyblack,
         ),
-        home: const splashscreen(),
+        home: splashscreen(),
       ),
     );
   }

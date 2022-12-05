@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:music_player/presentation/licence/screen_licenses.dart';
 import 'package:music_player/presentation/privacy/screen_privacy.dart';
 
@@ -24,6 +25,9 @@ class drawer extends StatelessWidget {
   Widget build(BuildContext context) {
     Uri aboutourappURL =
         Uri.parse('https://muhammedrafeeqkk.github.io/personal-portfolio/');
+    final applink = Html(
+        data:
+            """</p> <ul><li><a href="https://play.google.com/store/apps/details?id=in.brototype.tune" target="_blank" rel="noopener noreferrer">Google Play Services</a></li><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----><!----></ul></div> <p><strong>Log Data</strong></p> <p>""");
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -88,7 +92,8 @@ class drawer extends StatelessWidget {
                   GestureDetector(
                       onTap: () async {
                         await Share.share(
-                            'heloooooooooooi iam rafeeq kurachuuusudim kayinjaal inte app launch aaavum  wait cheyy');
+                          'Hello Everyone \n Install Tune  Apk With  playstore \n https://play.google.com/store/apps/details?id=in.brototype.tune',
+                        );
                       },
                       child: drewbaritems2(context, text3: 'share')),
                   sizedspace(context),
