@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:music_player/applications/playlistGridView/playlists_bloc.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/functions/playlists.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
@@ -83,28 +85,30 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                   new_playlist_creating_widget(context: context);
                 },
                 icon: Icon(Icons.add)),
-            ValueListenableBuilder(
-              valueListenable: getplaylistBox.listenable(),
-              builder: (context, value, child) {
-                List<String> keys = getplaylistBox.keys.toList().cast();
-                keys.removeWhere((item) => item.contains(
-                      'favorites',
-                    ));
+            // ValueListenableBuilder(
+            //   valueListenable: getplaylistBox.listenable(),
+            //   builder: (context, value, child) {
+            //     List<String> keys = getplaylistBox.keys.toList().cast();
+            //     keys.removeWhere((item) => item.contains(
+            //           'favorites',
+            //         ));
 
-                keys.removeWhere((element) => element.contains('recent'));
+            //     keys.removeWhere((element) => element.contains('recent'));
 
+            BlocBuilder<PlaylistsBloc, PlaylistsState>(
+              builder: (context, state) {
                 return Expanded(
                     child: ListView.separated(
                   shrinkWrap: true,
                   scrollDirection: Axis.vertical,
-                  itemCount: keys.length,
+                  itemCount: state.playlistkeyname.length,
                   separatorBuilder: (context, index) {
                     return SizedBox(
                       height: 5,
                     );
                   },
                   itemBuilder: (context, index) {
-                    final String playlistKey = keys[index];
+                    final String playlistKey = state.playlistkeyname[index];
                     final List<DBSongs> playlistValues = getplaylistBox
                         .get(playlistKey)!
                         .toList()
@@ -117,6 +121,7 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                             borderRadius: BorderRadius.circular(15)),
                         child: ListTile(
                             onLongPress: () {
+                              Navigator.pop(context);
                               Navigator.pop(context);
                               showDialog(
                                   context: context,
@@ -137,6 +142,10 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                                                 Navigator.pop(context);
                                                 getplaylistBox
                                                     .delete(playlistKey);
+                                                BlocProvider.of<PlaylistsBloc>(
+                                                        context)
+                                                    .add(PlaylistsEvent
+                                                        .getplaylistnames());
 
                                                 ScaffoldMessenger.of(context)
                                                     .showSnackBar(SnackBar(
@@ -194,11 +203,11 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                                       )));
                             },
                             onTap: (() {
-                              Navigator.pop(context);
                               Playlists.AddingToPlaylist(
-                                   playlistname: playlistKey,
+                                  playlistname: playlistKey,
                                   SongId: Song.id,
                                   context: context);
+                              Navigator.pop(context);
                             }),
                             leading: Icon(
                               Icons.playlist_add_check,
@@ -212,7 +221,9 @@ PlaylistModelBottomSheet({required context, required DBSongs Song}) {
                   },
                 ));
               },
-            )
+            ),
+            //   },
+            // )
           ],
         ),
       );

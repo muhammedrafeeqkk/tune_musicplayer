@@ -1,9 +1,7 @@
-import 'dart:developer';
-
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/adapters.dart';
-import 'package:music_player/db/db_functions/db_function.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:music_player/applications/playlistGridView/playlists_bloc.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/presentation/inside_library/screen_insideLibrary.dart';
 
@@ -12,6 +10,7 @@ import 'package:music_player/widgets/music.dart';
 
 import 'package:music_player/widgets/new_create_playlist_show_dailouge.dart';
 
+import '../../applications/playlistGridView/playlists_bloc.dart';
 import '../../widgets/customgrid.dart';
 
 class ScreenLibrary extends StatelessWidget {
@@ -24,22 +23,13 @@ class ScreenLibrary extends StatelessWidget {
   final List<DBSongs> item;
   final AssetsAudioPlayer audioPlayer;
 
-//   @override
-//   State<ScreenLibrary> createState() => _ScreenLibraryState();
-// }
-
-// class _ScreenLibraryState extends State<ScreenLibrary> {
-//   @override
-//   void initState() {
-//     // TODO: implement initState
-//     super.initState();
-//   }
-
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
-    Box<List> getplaylistBox = get_adding_lists();
-    ////////////////////////////////////
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      BlocProvider.of<PlaylistsBloc>(context).add(Getplaylistnames());
+    });
+
     final songId = audioPlayer.id;
     final currentindex = currentsongindex(songId: songId);
 
@@ -53,84 +43,80 @@ class ScreenLibrary extends StatelessWidget {
             audioPlayer: audioPlayer);
       },
     );
-    //////////////////////////
-    return Scaffold(
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('Liabrary'),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  new_playlist_creating_widget(context: context);
-                },
-                icon: Icon(Icons.add))
-          ],
-        ),
-        body: Column(
-          children: [
-            ValueListenableBuilder(
-              valueListenable: getplaylistBox.listenable(),
-              builder: (context, value, child) {
-                List<String> keys = getplaylistBox.keys.toList().cast();
-                keys.removeWhere((item) => item.contains('favorites'));
-                keys.removeWhere((item) => item.contains('recent'));
 
-                return Expanded(
-                  flex: 14,
-                  child: keys.isEmpty
-                      ? Center(
-                          child: Text(
-                          'No Playlists',
-                          style: TextStyle(
-                              color: grey,
-                              fontSize: 18,
-                              fontWeight: FontWeight.w500),
-                        ))
-                      : Container(
-                          child: GridView.builder(
-                            scrollDirection: Axis.vertical,
-                            itemCount: keys.length,
-                            padding: EdgeInsets.all(screenWidth * 0.042),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount: 2,
-                                    crossAxisSpacing: 15,
-                                    mainAxisSpacing: 15,
-                                    childAspectRatio: (5 / 4)),
-                            itemBuilder: (BuildContext context, int index) {
-                              final playlistkeyname = keys[index];
+    return BlocBuilder<PlaylistsBloc, PlaylistsState>(
+      builder: (context, state) {
+        return Scaffold(
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text('Liabrary'),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    new_playlist_creating_widget(context: context);
+                  },
+                  icon: Icon(Icons.add))
+            ],
+          ),
+          body: Column(
+            children: [
+              Expanded(
+                flex: 14,
+                child: state.playlistkeyname.isEmpty
+                    ? Center(
+                        child: Text(
+                        'No Playlists',
+                        style: TextStyle(
+                            color: grey,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500),
+                      ))
+                    : Container(
+                        child: GridView.builder(
+                          scrollDirection: Axis.vertical,
+                          itemCount: state.playlistkeyname.length,
+                          padding: EdgeInsets.all(screenWidth * 0.042),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                  crossAxisCount: 2,
+                                  crossAxisSpacing: 15,
+                                  mainAxisSpacing: 15,
+                                  childAspectRatio: (5 / 4)),
+                          itemBuilder: (BuildContext context, int index) {
+                            final String playlistkeyname =
+                                state.playlistkeyname[index];
 
-                              return Container(
-                                  child: GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  screencarlibrary(
-                                                      audioPlayer: audioPlayer,
-                                                      index: index,
-                                                      newkeys: playlistkeyname),
-                                            ));
-                                      },
-                                      child: ValueListenableBuilder(
-                                        valueListenable:
-                                            getplaylistBox.listenable(),
-                                        builder: (context, value, child) {
-                                          return customgrid(
-                                            color: pink,
-                                            playlistkeyname: playlistkeyname,
-                                          );
-                                        },
-                                      )));
-                            },
-                          ),
+                            return Container(
+                              child: GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => screencarlibrary(
+                                            audioPlayer: audioPlayer,
+                                            index: index,
+                                             newkeys: playlistkeyname
+                                            ),
+                                      ));
+                                },
+                                child: customgrid(
+                                  color: pink,
+                                  playlistkeyname: playlistkeyname,
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                );
-              },
-            ),
-          ],
-        ));
+                      ),
+              ),
+
+              //   },
+              // ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   currentsongindex({required songId}) {

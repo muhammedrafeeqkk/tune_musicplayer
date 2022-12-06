@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:music_player/applications/playlistGridView/playlists_bloc.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/functions/playlists.dart';
@@ -28,43 +30,51 @@ new_playlist_creating_widget({required context}) {
         backgroundColor: skyblack,
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(32.0))),
-        child: Container(
-          height: screenHeight * 0.28,
-          width: screenwidth * double.infinity,
-          child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: screenHeight * 0.02),
-                child: Text(
-                  'Create New Playlist',
-                  style: TextStyle(
-                      fontSize: 20, fontWeight: FontWeight.w500, color: white),
-                ),
+        child: BlocBuilder<PlaylistsBloc, PlaylistsState>(
+          builder: (context, state) {
+            return Container(
+              height: screenHeight * 0.28,
+              width: screenwidth * double.infinity,
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: screenHeight * 0.02),
+                    child: Text(
+                      'Create New Playlist',
+                      style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.w500,
+                          color: white),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: TextField(
+                      controller: textcontroller,
+                      decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.playlist_add),
+                          contentPadding: EdgeInsets.symmetric(vertical: 15),
+                          hintText: '       playlist name...',
+                          fillColor: grey,
+                          filled: true,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(25))),
+                    ),
+                  ),
+                  ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(pink)),
+                      onPressed: () {
+                        Navigator.pop(context);
+                        createNewplaylist();
+                        BlocProvider.of<PlaylistsBloc>(context)
+                            .add(Getplaylistnames());
+                      },
+                      child: Text('ok'))
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: TextField(
-                  controller: textcontroller,
-                  decoration: InputDecoration(
-                      prefixIcon: Icon(Icons.playlist_add),
-                      contentPadding: EdgeInsets.symmetric(vertical: 15),
-                      hintText: '       playlist name...',
-                      fillColor: grey,
-                      filled: true,
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(25))),
-                ),
-              ),
-              ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(pink)),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    createNewplaylist();
-                  },
-                  child: Text('ok'))
-            ],
-          ),
+            );
+          },
         )),
   );
   ;

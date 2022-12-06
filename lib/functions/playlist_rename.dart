@@ -1,7 +1,9 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:music_player/applications/playlistGridView/playlists_bloc.dart';
 import 'package:music_player/db/db_functions/db_function.dart';
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
 import 'package:music_player/shortcuts/shortcuts.dart';
@@ -9,24 +11,30 @@ import 'package:searchfield/searchfield.dart';
 
 class playlist {
   static final Box<List> GettingPlaylist = get_adding_lists();
-  static final Box<DBSongs> allsong = get_allsongsbox();
+  // static final Box<DBSongs> allsong = get_allsongsbox();
 
   static playlistRename({
     required context,
-    required dynamic playlistkeyname,
+    required dynamic playlistkeyoldname,
   }) {
     final screenWidth = MediaQuery.of(context).size.width;
     final screenheight = MediaQuery.of(context).size.height;
     final TextEditingController textcontroller =
-        TextEditingController(text: playlistkeyname);
+        TextEditingController(text: playlistkeyoldname);
     showDialog(
         context: context,
         builder: (context) {
           final formkey = GlobalKey<FormState>();
           return Builder(builder: (context) {
-            return ValueListenableBuilder(
-              valueListenable: GettingPlaylist.listenable(),
-              builder: (context, value, child) {
+            return
+
+                //  ValueListenableBuilder(
+                //   valueListenable: GettingPlaylist.listenable(),
+                //   builder: (context, value, child) {
+                //     return
+
+                BlocBuilder<PlaylistsBloc, PlaylistsState>(
+              builder: (context, state) {
                 return Dialog(
                     backgroundColor: skyblack,
                     shape: RoundedRectangleBorder(
@@ -54,19 +62,21 @@ class playlist {
                                   suggestions: [],
 
                                   validator: (value) {
-                                    final KEys = GettingPlaylist.keys.toList();
+                                    final KEys = state.playlistkeyname.toList();
+                                    // log(KEys.toString());
                                     if (value == null || value.isEmpty) {
                                       return 'field is empty';
                                     }
                                     if (KEys.contains(value)) {
                                       return '$value  alredy existed';
                                     }
+                                    // log((KEys.contains(value)).toString());
                                     {
                                       return null;
                                     }
                                   },
 
-                                  hint: playlistkeyname,
+                                  hint: 'rename',
                                   controller: textcontroller,
                                   //  InputDecoration(
                                   //     prefixIcon:
@@ -79,40 +89,61 @@ class playlist {
                                   //         borderRadius: BorderRadius.circular(25))),
                                 ),
                               )),
-                          ValueListenableBuilder(
-                            valueListenable: GettingPlaylist.listenable(),
-                            builder: (context, value, child) {
+                          // ValueListenableBuilder(
+                          //   valueListenable: GettingPlaylist.listenable(),
+                          //   builder: (context, value, child) {
+                          //     return
+
+                          BlocBuilder<PlaylistsBloc, PlaylistsState>(
+                            builder: (context, state) {
                               return ElevatedButton(
                                   style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all(pink)),
                                   onPressed: () async {
                                     if (formkey.currentState!.validate()) {
-                                      final List<DBSongs> playlistValues =
-                                          GettingPlaylist.get(playlistkeyname)!
-                                              .toList()
-                                              .cast<DBSongs>();
+                                      BlocProvider.of<PlaylistsBloc>(context)
+                                          .add(Renameplaylist(
+                                              newplaylistname:
+                                                  textcontroller.text.trim(),
+                                              oldplaylistname:
+                                                  playlistkeyoldname));
 
-                                      final newplaylistKeyName =
-                                          textcontroller.text.trim();
-                                      await GettingPlaylist.put(
-                                        newplaylistKeyName,
-                                        playlistValues,
-                                      );
+                                      // final List<DBSongs> playlistValues =
+                                      //     GettingPlaylist.get(playlistkeyname)!
+                                      //         .toList()
+                                      //         .cast<DBSongs>();
 
-                                      GettingPlaylist.delete(playlistkeyname);
-                                      
+                                      // final newplaylistKeyName =
+                                      //     textcontroller.text.trim();
+                                      // await GettingPlaylist.put(
+                                      //   newplaylistKeyName,
+                                      //   playlistValues,
+                                      // );
+                                      BlocProvider.of<PlaylistsBloc>(context)
+                                          .add(PlaylistsEvent
+                                              .getplaylistnames());
+                                      // log(' old playlistname${playlistkeyoldname}');
+                                      // log(' new playlistname${textcontroller.text}');
+
+                                      // GettingPlaylist.delete(
+                                      //     playlistkeyoldname);
+
                                       Navigator.pop(context);
                                     }
                                   },
                                   child: Text('okk'));
                             },
                           ),
+                          //   },
+                          // ),
                         ],
                       ),
                     ));
               },
             );
+            //   },
+            // );
           });
         });
   }

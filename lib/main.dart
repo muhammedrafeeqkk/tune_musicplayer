@@ -4,9 +4,11 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:music_player/applications/favorites/favorites/favorites_bloc.dart';
 
 import 'package:music_player/applications/home/search/search_bloc.dart';
+import 'package:music_player/applications/playlistGridView/playlists_bloc.dart';
 import 'package:music_player/applications/recent/recent_bloc.dart';
 
 import 'package:music_player/db/db_functions/db_models/data_model.dart';
+import 'package:music_player/functions/playlist_rename.dart';
 import 'package:music_player/presentation/splash/screen_splashscreen.dart';
 
 import 'package:music_player/shortcuts/shortcuts.dart';
@@ -42,6 +44,10 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => RecentBloc(),
+          child: Container(),
+        ),
+        BlocProvider(
+          create: (context) => PlaylistsBloc(),
           child: Container(),
         )
       ],
